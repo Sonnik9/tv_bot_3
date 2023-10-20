@@ -13,10 +13,13 @@ class GET_BINANCE_DATA(Configg):
         all_tickers = self.HTTP_request(url, method=method, headers=self.header)
         return all_tickers
     
-    def get_excangeInfo(self, url):
+    def get_excangeInfo(self, symbol):
         exchangeInfo = None
-        if not url:
+        if symbol:            
+            url = f"{my_params.URL_PATTERN_DICT['exchangeInfo_url']}?symbol={symbol}"
+        else:
             url = my_params.URL_PATTERN_DICT['exchangeInfo_url']
+
         method = 'GET'
         exchangeInfo = self.HTTP_request(url, method=method, headers=self.header)
         return exchangeInfo
@@ -30,6 +33,17 @@ class GET_BINANCE_DATA(Configg):
         current_balance = self.HTTP_request(url, method=method, headers=self.header, params=params)
         current_balance = float([x['balance'] for x in current_balance if x['asset'] == 'USDT'][0])
         return current_balance
+    
+    def get_position_price(self, symbol):
+        positions = None
+        method = 'GET'
+        url = my_params.URL_PATTERN_DICT['positions_url']
+        params = {}
+        params = self.get_signature(params)
+        positions = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        # print(positions)
+        positions = float([x for x in positions if x['symbol'] == symbol][0]["entryPrice"])
+        return positions
 
     def get_top_pairs(self):
         all_tickers = []
@@ -42,7 +56,7 @@ class GET_BINANCE_DATA(Configg):
         if all_tickers:            
             # print(len(all_tickers))
             # print(all_tickers[0]['lastPrice'])
-            usdt_filtered = [ticker for ticker in all_tickers if ticker['symbol'].upper().endswith('USDT') and 'UP' not in ticker['symbol'].upper() and 'DOWN' not in ticker['symbol'].upper() and 'RUB' not in ticker['symbol'].upper() and 'EUR' not in ticker['symbol'].upper() and float(ticker['lastPrice']) >= 1.0]
+            usdt_filtered = [ticker for ticker in all_tickers if ticker['symbol'].upper().endswith('USDT') and 'UP' not in ticker['symbol'].upper() and 'DOWN' not in ticker['symbol'].upper() and 'RUB' not in ticker['symbol'].upper() and 'EUR' not in ticker['symbol'].upper() and float(ticker['lastPrice']) >= 0.1]
             
             sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
 
@@ -59,6 +73,10 @@ class GET_BINANCE_DATA(Configg):
 # python -m API.bin_data_get
    
 bin_data = GET_BINANCE_DATA()
+
+# symbol = 'BTCUSDT'
+# s = bin_data.get_position_price(symbol)
+# print(s)
 
 # all_tickers = None 
 # # all_tickers = bin_data.get_excangeInfo()

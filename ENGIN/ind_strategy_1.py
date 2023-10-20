@@ -26,7 +26,9 @@ def sigmals_handler_one(all_coins_indicators):
                 pass
         # elif recommendation == 'STRONG_SELL' and my_params.MARKET == 'futures':
         elif recommendation == 'STRONG_SELL':  
-            try:          
+            try: 
+                # print(atr)
+                # print(type(atr))         
                 orders_stek.append((indicator, -1, atr))             
             except:
                 pass

@@ -1,7 +1,7 @@
 import asyncio
 import math
 from API.bin_data_get import bin_data
-# from API.create_order import create_orders_obj
+from API.create_order import create_orders_obj
 from pparamss import my_params
 from ENGIN.main_strategy_controller import strateg_controller   
 from UTILS.waiting_candle import kline_waiter
@@ -20,22 +20,19 @@ import json
 import sys 
 
 async def price_monitoring(main_stake, data_callback):
-    url = f'wss://stream.binance.com:9443/stream?streams='      
-
-    main_stake_var = []
-    main_stake_var = main_stake
-    streams = [f"{k['symbol'].lower()}@kline_1s" for k in main_stake]
-    print(f"start_stake:___{len(main_stake_var)}")
+    url = f'wss://stream.binance.com:9443/stream?streams='
+    main_stake_var = main_stake.copy()
+    streams = [f"{k['symbol'].lower()}@kline_1s" for k in main_stake_var]
+    print(f"start_socket_stake:___{len(main_stake_var)}")
 
     try:
         while True:   
             data_prep = None   
             ws = None            
             first_iter_flag = False
-            profit_flag = False
+            done_flag = False
             intermedeate_data_list = []    
-            enter_price_list = []
-              
+                          
             try:
                 # print('hi')
                 async with aiohttp.ClientSession() as session:
@@ -43,47 +40,37 @@ async def price_monitoring(main_stake, data_callback):
                         subscribe_request = {
                             "method": "SUBSCRIBE",
                             "params": streams,
-                            "id": 9457947
+                            "id": 9457945
                         }
                         try:
                             data_prep = await ws.send_json(subscribe_request)                            
                         except:
                             pass
                    
-                        if not data_prep and first_iter_flag:                                                
+                        if not data_prep and first_iter_flag:                                             
                             await asyncio.sleep(7)
-                            continue
-                        
+                            continue                       
+
                         async for msg in ws:                            
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:                                    
-                                    data = json.loads(msg.data)  
-                                    # print(data)                                                          
+                                    data = json.loads(msg.data)                                             
                                     symbol = data.get('data',{}).get('s')                                    
-                                    close_price = float(data.get('data',{}).get('k',{}).get('c'))   
+                                    close_price = float(data.get('data',{}).get('k',{}).get('c'))  
                                     # print(close_price) 
-
+                                    
                                     for item in main_stake_var:
                                         if symbol == item["symbol"]:
-                                            intermedeate_data_list.append((symbol, close_price))                               
+                                            intermedeate_data_list.append((symbol, close_price))                            
                                 except:
                                     pass
                                 
                                 if len(intermedeate_data_list) == len(main_stake_var):
-                                    if not first_iter_flag:                                
-                                        enter_price_list = intermedeate_data_list
-                                        first_iter_flag = True
-                                        intermedeate_data_list = []
-                                        continue
-                                    main_stake_var, profit_flag = await data_callback(intermedeate_data_list, enter_price_list, main_stake_var)
-                                    intermedeate_data_list = []
-                                    # await asyncio.sleep(5)
-                                    if len(main_stake_var) == 0:
-                                        await ws.close()
-                                        print('Something not very good..')
-                                        return
-                                        # sys.exit()
-                                    if profit_flag:                               
+                                    main_stake_var, done_flag = await data_callback(intermedeate_data_list, main_stake_var)
+                                    intermedeate_data_list = [] 
+                                    first_iter_flag = True                           
+
+                                    if done_flag or len(main_stake_var) == 0:                               
                                         return 
 
             except Exception as e:
@@ -95,48 +82,78 @@ async def price_monitoring(main_stake, data_callback):
     finally:
         await ws.close()
         return main_stake_var
+
+def done_confidencer(main_stake):
+
+    main_stake_var = main_stake.copy()
+    open_pos = None
+    cancel_all_orders_answer = None
+    open_pos_symbol_list = []
+    try_to_close_by_market_list = []
+
+    open_pos = create_orders_obj.get_open_positions()   
+    open_pos_symbol_list = [x["symbol"] for x in open_pos]
+
+    for i, item in enumerate(main_stake):
+        if item["done_level"] == 6:
+            if item["symbol"] in open_pos_symbol_list:
+                try_to_close_by_market_list.append(item)
+            else:
+                main_stake_var[i]["close_position"] = True
+    try: 
+        good_news_symbol_list, bad_news_symbol_list = [], []   
+        good_news_symbol_list, bad_news_symbol_list = create_orders_obj.try_to_close_by_market_open_position_by_item(try_to_close_by_market_list)
+        if good_news_symbol_list:           
+            for i, item in enumerate(main_stake):
+                if item["done_level"] == 6:
+                    if item["symbol"] in good_news_symbol_list:
+                        main_stake_var[i]["close_position"] = True           
+        
+        symbol_list_to_cancel_orders = [x["symbol"] for x in main_stake_var if x["close_position"]]
+        cancel_all_orders_answer = create_orders_obj.cancel_all_orders_for_position(symbol_list_to_cancel_orders)
+    except Exception as ex:
+        print(ex)
+
+    return main_stake_var, bad_news_symbol_list, cancel_all_orders_answer 
     
-async def process_data(intermediate_data_list, enter_price_list, main_stake):
-    # print(f"process_data_enter_price_list:__{len(enter_price_list)}")
-    # print(f"process_data_intermediate_data_list:__{len(enter_price_list)}")
-    # print(f"process_data_main_stake_before:__{len(main_stake)}")
-    # print(enter_price_list)
+async def process_data(intermediate_data_list, main_stake):
 
     symbol_to_item = {item['symbol']: item for item in main_stake}    
-    profit_flag = False
+    done_flag = False
     for symbol, current_price in intermediate_data_list:
         if symbol in symbol_to_item:
             symbol_to_item[symbol]['current_price'] = current_price
 
-    for symbol, enter_price in enter_price_list:
-        if symbol in symbol_to_item and not symbol_to_item[symbol]['in_position']:
-            symbol_to_item[symbol]['enter_price'] = enter_price
-
     main_stake = list(symbol_to_item.values())
-    # print(main_stake)
 
     try:
-        main_stake, profit_flag = sl_strategies.sl_controller(main_stake)
+        main_stake, done_flag = sl_strategies.sl_controller(main_stake)
     except Exception as ex:
-        print(f"125:__{ex}")
+        print(f"main_101str:__ {ex}")
 
-    return main_stake, profit_flag
+    return main_stake, done_flag
 
 def stake_generator(usual_defender_stake):
     universal_stake = [
         {
-            "profit": None,
+            # "approximate_profit": None,
             "symbol": s,
             "defender": d,
-            "enter_price": None,
-            "current_price": None,
-            "target_point_level": 1,
+            "enter_deFacto_price": None,            
+            "current_price": None,            
             "in_position": False,
-            "close_order": False,
-            "qnt": None,
-            "qnt_exit": None,
+            "close_position": False,
+            "qnt": None, 
+            "step_size_for_price": None,       
             "atr": atr,
-            # "atr_a": atr_a
+            "last_sl_order_id": None,            
+            "static_tp_order_id": None,
+            "static_tp_price": None,
+            "static_sl_price": None,
+            "checkpointt": None,
+            "breakpointt": None,
+            "done_level": 0,
+            "position_problem": []       
         }
             for s, d, atr in usual_defender_stake            
     ] 
@@ -149,7 +166,7 @@ async def main(start_time):
     usual_defender_stake = []
     total_raport_list = [] 
     intermedeate_raport_list = [] 
-    main_stake_symbols_list = []
+    main_stake_busy_symbols_list = []
     recalculated_depo = None
     atr_corrector_list = []
     # print(my_params.limit_selection_coins)
@@ -164,7 +181,7 @@ async def main(start_time):
     # finish_time = time.time() - start_time    
     # print(f"Общее время поиска:  {math.ceil(finish_time)} сек")
 
-    sys.exit() 
+    # sys.exit() 
     try:
         wait_time = kline_waiter(my_params.KLINE_TIME, my_params.TIME_FRAME)
         print(f"waiting time to close last candle is: {wait_time} sec")
@@ -177,7 +194,7 @@ async def main(start_time):
             # await asyncio.sleep(2)
             if len(total_raport_list) >= 1:
                 print('it is time to assuming!')  
-                asum_counter(total_raport_list)
+                # asum_counter(total_raport_list)
                 # create_orders_obj.cancel_all_orderss()
                 # create_orders_obj.calcel_all_futures_positions()
                 cleanup_cache()
@@ -190,14 +207,15 @@ async def main(start_time):
             print(current_time)
             if time(0, 0) <= time(int(current_time.split(':')[0]), int(current_time.split(':')[1])) <= time(1, 0):
                 print('it is time to assuming!') 
-                if len(total_raport_list) >= 1:               
-                    asum_counter(total_raport_list)
+                if len(total_raport_list) >= 1:   
+                    pass            
+                    # asum_counter(total_raport_list)
                 break
 
             try:
                 usual_defender_stake = strateg_controller.main_strategy_control_func(top_coins)
                 print(len(usual_defender_stake))
-                usual_defender_stake = [x for x in usual_defender_stake if x[0] not in main_stake_symbols_list]
+                usual_defender_stake = [x for x in usual_defender_stake if x[0] not in main_stake_busy_symbols_list]
                 # print(usual_defender_stake)
             except Exception as ex:
                 print(f"192___{ex}") 
@@ -229,13 +247,16 @@ async def main(start_time):
                 # print(main_stake)
                 # sys.exit()
                 main_stake = await price_monitoring(main_stake, process_data)
-                if main_stake:                         
-                    intermedeate_raport_list = [x for x in main_stake if x["close_order"]] 
+                if main_stake: 
+                    main_stake, _, _ = done_confidencer(main_stake)
+                        
+                    intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
                     total_raport_list += intermedeate_raport_list
-                    main_stake = [x for x in main_stake if not x["close_order"]]
-                    main_stake_symbols_list = [x['symbol'] for x in main_stake]
-                if len(main_stake) == 0:
-                    sys.exit()
+                    main_stake = [x for x in main_stake if not x["close_position"]]
+                    main_stake_busy_symbols_list = [x['symbol'] for x in main_stake]
+             
+                # if len(main_stake) == 0:
+                #     sys.exit()
                     # print(total_raport_list)
                 # break
             except Exception as ex:

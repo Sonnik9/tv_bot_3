@@ -85,3 +85,41 @@
     #                 close_position = self.HTTP_request(order_url, method=method, headers=self.header, params=order_params)
     #                 print(close_position)
     #     return
+
+
+                # if not first_iter_flag:                                
+                #     enter_price_list = intermedeate_data_list
+                #     first_iter_flag = True
+                #     intermedeate_data_list = []
+                #     continue
+
+# await asyncio.sleep(5)
+
+    # def HTTP_request(self, url, **kwargs):
+    #     response = None
+    #     retries = 3  
+    #     retry_delay = 2  
+    #     exceptionss = []
+
+    #     for _ in range(retries):
+    #         try:
+    #             response = requests.request(url=url, **kwargs)
+    #             excHttp = response.raise_for_status()
+    #             print(excHttp)
+    #             response = response.json()
+    #             break
+    #         except requests.exceptions.RequestException as ex:
+    #             print(f"HTTP Request Error: {ex}")
+    #             exceptionss.append(ex)
+    #         except ValueError as ex:
+    #             print(f"JSON Parsing Error: {ex}")
+    #             exceptionss.append(ex)
+    #         except Exception as ex:
+    #             print(f"Unknown Error: {ex}")
+    #             exceptionss.append(ex)
+
+    #         if _ < retries - 1:
+    #             time.sleep(retry_delay)
+    #             retry_delay *= 2  
+
+    #     return response, exceptionss
