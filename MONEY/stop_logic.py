@@ -3,6 +3,13 @@ from API.create_order import create_orders_obj
 from API.bin_data_get import bin_data
 from UTILS.calc_qnt import calc_qnt_func
 
+import logging
+import os
+import inspect
+
+logging.basicConfig(filename='MONEY/stop_logic_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
+
 class SL_STRATEGYY():
     def __init__(self) -> None:
         # self.sl_atr_multiplier = 1.2 #2.0 
@@ -12,9 +19,98 @@ class SL_STRATEGYY():
         self.TABULA_SL_TP_POINTS = my_params.SL_TABULA_LIST[my_params.SL_TABULA_NUMBER][1]             
         self.STATIC_SL_Q = self.TABULA_STATIC_SL_TP_POINTS[0]        
         self.STATIC_TP_Q = self.TABULA_STATIC_SL_TP_POINTS[1]
-        
+
+    def step_by_step_sl_assambler(self, main_stake, step):
+
+        main_stake_var = main_stake.copy()
+
+        for i, _ in enumerate(main_stake): 
+            symbol = main_stake_var[i]["symbol"]             
+
+            if step == 0:
+                try:
+                    lev = create_orders_obj.set_leverage(symbol)                    
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                if lev and 'leverage' in lev and lev['leverage'] == my_params.LEVERAGE:
+                    main_stake_var[i]["done_level"] = 1
+
+            if step ==1:
+                enter_deJure_price = main_stake_var[i]["current_price"]
+                try:                    
+                    main_stake_var[i]['qnt'], main_stake_var[i]["step_size_for_price"] = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO)
+                    # qnt = round(qnt, step_size) 
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+                if main_stake_var[i]['qnt']: 
+                    main_stake_var[i]["done_level"] = 2
+
+            if step == 2:
+                is_closing = 1
+                success_flag = False
+                try:          
+                    open_market_order, success_flag = create_orders_obj.open_market_order(main_stake_var[i], is_closing)
+                    # print(f"str74:  {open_market_order}") 
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                if success_flag:
+                    main_stake_var[i]["done_level"] = 3
+                    try:
+                        main_stake_var[i]["enter_deFacto_price"] = bin_data.get_position_price(symbol)
+                    except Exception as ex:
+                        logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+            if step == 3:
+                is_closing = -1
+                success_flag = False               
+                try:                                      
+                    target_sl_price = main_stake_var[i]["static_sl_price"] = round(main_stake_var[i]["enter_deFacto_price"] - (main_stake_var[i]["defender"] * self.STATIC_SL_Q * main_stake_var[i]["atr"]), main_stake_var[i]["step_size_for_price"])
+
+                    target_tp_price = main_stake_var[i]["static_tp_price"] = round(main_stake_var[i]["enter_deFacto_price"] + (main_stake_var[i]["defender"] * self.STATIC_TP_Q * main_stake_var[i]["atr"]), main_stake_var[i]["step_size_for_price"])
+
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+                
+                try:  
+                    # sl static order                                     
+                    open_static_sl_order, success_flag = create_orders_obj.open_limit_order(main_stake_var[i], is_closing, target_sl_price)
+                    if success_flag:
+                        main_stake_var[i]["last_sl_order_id"] = open_static_sl_order["orderId"]                                                  
+                        main_stake_var[i]["done_level"] = 4    
+                        success_flag = False          
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                try:  
+                    # tp static order 
+                    if main_stake_var[i]["done_level"] == 4:              
+                        open_static_tp_order, success_flag = create_orders_obj.open_limit_order(main_stake_var[i], is_closing, target_sl_price)
+                        if success_flag:                        
+                            main_stake_var[i]["done_level"] = 5 
+             
+                except Exception as ex:
+                    logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
+
+        if step == 0:
+            main_stake_var = [x for x in main_stake_var if x["done_level"] == 1]
+            step = 1
+            return main_stake_var, step
+        if step == 1:
+            main_stake_var = [x for x in main_stake_var if x["done_level"] == 2]
+            step = 2
+            return main_stake_var, step
+        if step == 2:
+            main_stake_var = [x for x in main_stake_var if x["done_level"] == 3]
+            step = 3
+            return main_stake_var, step
+        if step == 3:
+            main_stake_var = [x for x in main_stake_var if x["done_level"] == 5]
+            step = 4
+            return main_stake_var, step
+
     def sl_controller(self, main_stake):        
-        print(f"len_main_stake  {len(main_stake)}")       
+        print(f"len_main_stake  {len(main_stake)}")   
+        main_stake, step = self.step_by_step_sl_assambler(self, main_stake, step)    
         done_flag = False
         main_stake_var = main_stake.copy()
         

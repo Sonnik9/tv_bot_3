@@ -7,7 +7,7 @@ import logging
 import os
 import inspect
 
-logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
+logging.basicConfig(filename='API/orders_log.log', level=logging.ERROR)
 current_file = os.path.basename(__file__)
 
 # except Exception as ex:
@@ -33,6 +33,7 @@ class CREATE_BINANCE_ORDER(Configg):
     def open_market_order(self, item, is_closing):
 
         response = None
+        success_flag = False
         url = my_params.URL_PATTERN_DICT['create_order_url']
         params = {}
         method = 'POST'
@@ -48,42 +49,38 @@ class CREATE_BINANCE_ORDER(Configg):
 
         params = self.get_signature(params)
         response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        if response and 'status' in response and response['status'] == 'NEW':
+            success_flag = True
 
-        return response 
+        return response, success_flag
 
-    def open_limit_order(self, item, is_closing, type_market, target_price):
-        # ['LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', 'TRAILING_STOP_MARKET']
-        # print(item)
+    def open_limit_order(self, item, is_closing, target_price):
+
         response = None
+        success_flag = False
         url = my_params.URL_PATTERN_DICT['create_order_url']
         params = {}
         method = 'POST'
         params["symbol"] = item["symbol"] 
         params["quantity"] = item['qnt']
+        params["type"] = 'LIMIT'
+        params["price"] = target_price
+        params["timeinForce"] = 'GTC' 
          
         if item["defender"] == 1*is_closing:
             side = 'BUY'
         elif item["defender"] == -1*is_closing:
             side = "SELL" 
-        params["side"] = side 
+        params["side"] = side
+        # print(item, is_closing, target_price)
+        params = self.get_signature(params)
+        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        if response and 'status' in response and response['status'] == 'NEW':
+            success_flag = True
 
-        if type_market == 'MARKET':            
-            params["type"] = type_market
-        elif type_market == 'LIMIT':
-            params["type"] = type_market
-            params["price"] = target_price
-            params["timeinForce"] = 'GTC' 
-        print(item, is_closing, type_market, target_price) 
-        try:
-            params = self.get_signature(params)
-        except Exception as ex:
-            print(ex)
-        try:
-            response = self.HTTP_request(url, method=method, headers=self.header, params=params)
-        except Exception as ex:
-            print(ex)
-        
-        return response 
+        return response, success_flag
+    
+# ////////////////////////////////////////////////////////////////////////////////////
 
     def get_all_orders(self):
         all_orders = None

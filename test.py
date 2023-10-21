@@ -23,9 +23,21 @@
 # import copy
 # main_stake_cycl = copy.deepcopy(main_stake_resp)
 
-s = [89,9,6]
-d = s
-s.pop(0)
-# print(s)
-print(d)
+# s = [89,9,6]
+# d = s
+# s.pop(0)
+# # print(s)
+# print(d)
+
+# a = [1,2,3,4,5]
+# b = a.copy()
+
+# for i, _ in enumerate(a):
+
+
+#     if b[i] ==2:
+#         b[i] = None
+# print(b)
+# a = 0.0009
+# print(round(a,5))
 
