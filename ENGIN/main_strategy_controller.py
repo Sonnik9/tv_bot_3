@@ -15,7 +15,7 @@ class STRATEGY_CONTROLLER():
 
         all_coins_indicators = get_multiple_analysis(symbols=symbols,
                             screener='crypto',                    
-                            interval=my_params.interval)
+                            interval=my_params.INTERVAL)
         
         return all_coins_indicators
 

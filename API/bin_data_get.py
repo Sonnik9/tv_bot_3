@@ -1,5 +1,6 @@
 from API.config import Configg
 from pparamss import my_params
+import pandas as pd
 
 class GET_BINANCE_DATA(Configg):
 
@@ -56,7 +57,7 @@ class GET_BINANCE_DATA(Configg):
         if all_tickers:            
             # print(len(all_tickers))
             # print(all_tickers[0]['lastPrice'])
-            usdt_filtered = [ticker for ticker in all_tickers if ticker['symbol'].upper().endswith('USDT') and 'UP' not in ticker['symbol'].upper() and 'DOWN' not in ticker['symbol'].upper() and 'RUB' not in ticker['symbol'].upper() and 'EUR' not in ticker['symbol'].upper() and float(ticker['lastPrice']) >= 0.1]
+            usdt_filtered = [ticker for ticker in all_tickers if ticker['symbol'].upper().endswith('USDT') and 'UP' not in ticker['symbol'].upper() and 'DOWN' not in ticker['symbol'].upper() and 'RUB' not in ticker['symbol'].upper() and 'EUR' not in ticker['symbol'].upper() and float(ticker['lastPrice']) >= my_params.FILTER_PRICE]
             
             sorted_by_volume_data = sorted(usdt_filtered, key=lambda x: float(x['quoteVolume']), reverse=True)
 
@@ -70,9 +71,35 @@ class GET_BINANCE_DATA(Configg):
 
         return top_pairs
     
+    def get_klines(self, symbol):
+        klines = None
+        url = my_params.URL_PATTERN_DICT["klines_url"]
+        method = 'GET'
+        params = {}
+        params["symbol"] = symbol
+        params["interval"] = my_params.INTERVAL
+        params["limit"] = 16
+        params = self.get_signature(params)
+        klines = self.HTTP_request(url, method=method, headers=self.header, params=params)
+        if klines:
+            data = pd.DataFrame(klines).iloc[:, :6]
+            data.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+            data = data.set_index('Time')
+            data.index = pd.to_datetime(data.index, unit='ms')
+            data = data.astype(float)
+        
+        return data
+
+    
 # python -m API.bin_data_get
    
 bin_data = GET_BINANCE_DATA()
+
+# klines = None 
+# klines = bin_data.get_klines()
+# print(klines)
+
+
 
 # symbol = 'BTCUSDT'
 # s = bin_data.get_position_price(symbol)

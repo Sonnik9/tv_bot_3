@@ -30,7 +30,7 @@ class CREATE_BINANCE_ORDER(Configg):
         
         return response 
     
-    def open_market_order(self, item, is_closing):
+    def make_order(self, item, is_closing, target_price, market_type):
 
         response = None
         success_flag = False
@@ -38,41 +38,23 @@ class CREATE_BINANCE_ORDER(Configg):
         params = {}
         method = 'POST'
         params["symbol"] = item["symbol"] 
-        params["quantity"] = item['qnt']
-        params["type"] = 'MARKET'
-         
+        params["type"] = market_type
+        
+        if market_type == 'MARKET' or market_type == 'LIMIT':
+            params["quantity"] = item['qnt']
+        if market_type == 'LIMIT':            
+            params["price"] = target_price
+            params["timeinForce"] = 'GTC' 
+        if market_type == 'STOP_MARKET' or market_type == 'TAKE_PROFIT_MARKET':
+            params['stopPrice'] = target_price
+            params['closePosition'] = True
+ 
         if item["defender"] == 1*is_closing:
             side = 'BUY'
         elif item["defender"] == -1*is_closing:
             side = "SELL" 
         params["side"] = side 
 
-        params = self.get_signature(params)
-        response = self.HTTP_request(url, method=method, headers=self.header, params=params)
-        if response and 'status' in response and response['status'] == 'NEW':
-            success_flag = True
-
-        return response, success_flag
-
-    def open_limit_order(self, item, is_closing, target_price):
-
-        response = None
-        success_flag = False
-        url = my_params.URL_PATTERN_DICT['create_order_url']
-        params = {}
-        method = 'POST'
-        params["symbol"] = item["symbol"] 
-        params["quantity"] = item['qnt']
-        params["type"] = 'LIMIT'
-        params["price"] = target_price
-        params["timeinForce"] = 'GTC' 
-         
-        if item["defender"] == 1*is_closing:
-            side = 'BUY'
-        elif item["defender"] == -1*is_closing:
-            side = "SELL" 
-        params["side"] = side
-        # print(item, is_closing, target_price)
         params = self.get_signature(params)
         response = self.HTTP_request(url, method=method, headers=self.header, params=params)
         if response and 'status' in response and response['status'] == 'NEW':
@@ -94,8 +76,10 @@ class CREATE_BINANCE_ORDER(Configg):
         return all_orders
     
     def cancel_order_by_id(self, symbol, last_sl_order_id):
+
         cancel_order = None
         all_orders = None
+        success_flag = False
 
         all_orders = self.get_all_orders()
 
@@ -107,10 +91,13 @@ class CREATE_BINANCE_ORDER(Configg):
                 params = self.get_signature(params)
                 url = my_params.URL_PATTERN_DICT['create_order_url']
                 method = 'DELETE'
-                cancel_order = self.HTTP_request(url, method=method, headers=self.header, params=params)
-                # print(cancel_orders)
+                cancel_order = self.HTTP_request(url, method=method, headers=self.header, params=params)                
                 break
-        return cancel_order
+
+        if cancel_order and 'status' in cancel_order and cancel_order['status'] == 'CANCELED':
+            success_flag = True 
+            
+        return cancel_order, success_flag
     
     def get_open_positions(self):
         all_positions = None        
@@ -211,13 +198,63 @@ class CREATE_BINANCE_ORDER(Configg):
             # print(cancel_orders)
 
         return cancel_orders_list
+
+
+    def close_position_confidencer(self, main_stake):
+
+        main_stake_var = main_stake.copy()
+        open_pos = None
+        cancel_all_orders_answer = None
+        open_pos_symbol_list = []
+        try_to_close_by_market_list = []
+
+        open_pos = self.get_open_positions()   
+        open_pos_symbol_list = [x["symbol"] for x in open_pos]
+
+        for i, item in enumerate(main_stake):
+            if item["done_level"] == 6:
+                if item["symbol"] in open_pos_symbol_list:
+                    try_to_close_by_market_list.append(item)
+                else:
+                    main_stake_var[i]["close_position"] = True
+        try: 
+            good_news_symbol_list, bad_news_symbol_list = [], []   
+            good_news_symbol_list, bad_news_symbol_list = self.try_to_close_by_market_open_position_by_item(try_to_close_by_market_list)
+            if good_news_symbol_list:           
+                for i, item in enumerate(main_stake):
+                    if item["done_level"] == 6:
+                        if item["symbol"] in good_news_symbol_list:
+                            main_stake_var[i]["close_position"] = True           
+            
+            symbol_list_to_cancel_orders = [x["symbol"] for x in main_stake_var if x["close_position"]]
+            cancel_all_orders_answer = self.cancel_all_orders_for_position(symbol_list_to_cancel_orders)
+        except Exception as ex:
+            print(ex)
+
+        return main_stake_var, bad_news_symbol_list, cancel_all_orders_answer 
     
 create_orders_obj = CREATE_BINANCE_ORDER()
 
+# make_order = None 
+# item = {}
 # symbol = 'BTCUSDT'
-# lev = None 
-# lev = create_orders_obj.set_leverage(symbol)
-# print(lev)
+# item["symbol"] = 'BTCUSDT'
+# item["qnt"] = 0.001
+# item["atr"] = 475
+# is_closing = 1
+# type_market = 'MARKET'
+# item["defender"] = 1
+# target_price = None 
+# # open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+
+# # print(open_market_order)
+# type_market = 'TRAILING_STOP_MARKET'
+# is_closing = -1
+# item["qnt"] = 0.001
+# target_price = None
+# item["enter_deFacto_price"] = 31276
+# open_trailing_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+# print(open_trailing_order)
 
 
 

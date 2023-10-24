@@ -1,0 +1,11 @@
+ERROR:root:An error occurred in file 'stop_logic.py', line 91: SL_STRATEGYY.checkpoint_calc() missing 2 required positional arguments: 'static_defender' and 'step_size'
+ERROR:root:An error occurred in file 'stop_logic.py', line 91: SL_STRATEGYY.checkpoint_calc() missing 2 required positional arguments: 'static_defender' and 'step_size'
+ERROR:root:An error occurred in file 'stop_logic.py', line 91: SL_STRATEGYY.checkpoint_calc() missing 2 required positional arguments: 'static_defender' and 'step_size'
+ERROR:root:An error occurred in file 'stop_logic.py', line 91: SL_STRATEGYY.checkpoint_calc() missing 2 required positional arguments: 'static_defender' and 'step_size'
+ERROR:root:An error occurred in file 'stop_logic.py', line 91: SL_STRATEGYY.checkpoint_calc() missing 2 required positional arguments: 'static_defender' and 'step_size'
+ERROR:root:An error occurred in file 'stop_logic.py', line 58: cannot access local variable 'recalc_depo' where it is not associated with a value
+ERROR:root:An error occurred in file 'stop_logic.py', line 27: unsupported operand type(s) for +: 'NoneType' and 'float'
+ERROR:root:An error occurred in file 'stop_logic.py', line 31: unsupported operand type(s) for +: 'NoneType' and 'float'
+ERROR:root:An error occurred in file 'stop_logic.py', line 58: cannot access local variable 'recalc_depo' where it is not associated with a value
+ERROR:root:An error occurred in file 'stop_logic.py', line 27: unsupported operand type(s) for +: 'NoneType' and 'float'
+ERROR:root:An error occurred in file 'stop_logic.py', line 31: unsupported operand type(s) for +: 'NoneType' and 'float'

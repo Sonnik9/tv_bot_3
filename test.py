@@ -1,43 +1,66 @@
+# from binance.client import Client
 
-# def foo(a):
-    
-#     for i, x in enumerate(a):
-#         if x%2 == 0:
-#             a[i] = None
-#     return a   
+# # Replace with your Binance API key and secret
+# BINANCE_API_PUBLIC_KEY_FUTURES_TEST = "96f214ce691b0dd8fc65b23002ee4e5ce0b55684598645c2eb2d0a819a6d387a" # test
+# BINANCE_API_PRIVATE_KEY_FUTURES_TEST = "46e1372c84151cd7d486a4734cc21023ba1724d067b5967ce48ce769025cf0d2" # test
 
-# a = c = [1, 2, 3, 4]
-# b = None
-# c = b = foo(a)
-# print(b)
-# print(c)
-# print(len(b))
-# # print(b[1])
-# b = list(filter(lambda x: x != None, b))
-# print(len(b))
+# api_key = "96f214ce691b0dd8fc65b23002ee4e5ce0b55684598645c2eb2d0a819a6d387a"
+# api_secret = "46e1372c84151cd7d486a4734cc21023ba1724d067b5967ce48ce769025cf0d2"
 
-# a = [None, 1,2,3]
-# print(a[0])
+# # Initialize the Binance client
+# client = Client(api_key, api_secret, testnet=True)
 
+# # Define the order parameters
+# symbol = 'BTCUSDT'  # The trading pair symbol
+# quantity = 0.001   
+#    # The quantity to buy or sell
+# atr = 475
+# enter_price = 31000 
+# callback_rate = 1.0 # The callback rate for the trailing stop (1.0% in this example)
+# callback_rate =  round((int(atr/1.618) * 100)/enter_price, 1)
+# precessionPrice = 2
+# stopPrice = round(enter_price - (atr * 1.618), precessionPrice)
+# # print(stopPrice)
 
-# import copy
-# main_stake_cycl = copy.deepcopy(main_stake_resp)
+# # print(callback_rate)
 
-# s = [89,9,6]
-# d = s
-# s.pop(0)
-# # print(s)
-# print(d)
+# # Create a MARKET order
+# order = client.create_order(
+#     symbol=symbol,
+#     side= 'BUY',  # Replace with BUY if you want to buy
+#     type='MARKET',
+#     quantity=quantity,
 
-# a = [1,2,3,4,5]
-# b = a.copy()
+# )
 
-# for i, _ in enumerate(a):
+# print(order)
+# import time
+# # Create a TRAILING_STOP_MARKET order
+# time.sleep(2)
+# order = client.create_order(
+#     symbol=symbol,
+#     side= 'SELL',  # Replace with BUY if you want to buy
+#     type='TRAILING_STOP_MARKET',
+#     quantity=quantity,
+#     activationPrice=None,  # Optional: The activation price
+#     stopPrice= stopPrice,        # Optional: The initial stop price
+#     callbackRate=callback_rate
+# )
 
+# print(order)
 
-#     if b[i] ==2:
-#         b[i] = None
-# print(b)
-# a = 0.0009
-# print(round(a,5))
+def count_multipliter_places(number):
+    if isinstance(number, (int, float)):
+        number_str = str(number)
+        if '.' in number_str:
+            return len(number_str.split('.')[1])
+    return 0
+
+a = 1.2378347683478
+b = 0.1 
+q = count_multipliter_places(b)
+
+c = round(a,q)
+print(c)
+
 

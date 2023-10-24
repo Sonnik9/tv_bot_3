@@ -12,22 +12,36 @@ current_file = os.path.basename(__file__)
 
 class SL_STRATEGYY():
     def __init__(self) -> None:
-        # self.sl_atr_multiplier = 1.2 #2.0 
-        # self.tp_art_multipler = 0.07 
         self.BUNCH_VARIANT = 1 
         self.TABULA_STATIC_SL_TP_POINTS = my_params.SL_TABULA_LIST[my_params.SL_TABULA_NUMBER][0]        
         self.TABULA_SL_TP_POINTS = my_params.SL_TABULA_LIST[my_params.SL_TABULA_NUMBER][1]             
         self.STATIC_SL_Q = self.TABULA_STATIC_SL_TP_POINTS[0]        
         self.STATIC_TP_Q = self.TABULA_STATIC_SL_TP_POINTS[1]
 
-    def step_by_step_sl_assambler(self, main_stake, step):
+    def checkpoint_calc(self, enter_deFacto_price, atr, q_sl, q_tp, defender, price_precision, static_defender, step_size):
+
+        checkpointt, breakpointt = None, None
+        try:
+            checkpointt = round(enter_deFacto_price + (defender * atr * q_tp), step_size)
+        except Exception as ex:
+            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+        try:
+            breakpointt = round(enter_deFacto_price + (static_defender * defender * atr * q_sl), step_size)
+        except Exception as ex:
+            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+
+        return checkpointt, breakpointt 
+
+    def usual_orders_assambler(self, main_stake, step):
 
         main_stake_var = main_stake.copy()
+        print(f"len(main_stake_var)  {len(main_stake_var)}")
 
         for i, _ in enumerate(main_stake): 
             symbol = main_stake_var[i]["symbol"]             
 
             if step == 0:
+                print(f"step   {step}")
                 try:
                     lev = create_orders_obj.set_leverage(symbol)                    
                 except Exception as ex:
@@ -38,8 +52,8 @@ class SL_STRATEGYY():
             if step ==1:
                 enter_deJure_price = main_stake_var[i]["current_price"]
                 try:                    
-                    main_stake_var[i]['qnt'], main_stake_var[i]["step_size_for_price"] = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO)
-                    # qnt = round(qnt, step_size) 
+                    main_stake_var[i]['qnt'], main_stake_var[i]["recalc_depo"],main_stake_var[i]["price_precision"], main_stake_var[i]["tick_size"] = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO)
+                    # qnt = round(qnt, price_precision) 
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
@@ -49,8 +63,10 @@ class SL_STRATEGYY():
             if step == 2:
                 is_closing = 1
                 success_flag = False
+                market_type = 'MARKET'
+                target_price = None
                 try:          
-                    open_market_order, success_flag = create_orders_obj.open_market_order(main_stake_var[i], is_closing)
+                    open_market_order, success_flag = create_orders_obj.make_order(main_stake_var[i], is_closing, target_price, market_type)
                     # print(f"str74:  {open_market_order}") 
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
@@ -58,36 +74,49 @@ class SL_STRATEGYY():
                     main_stake_var[i]["done_level"] = 3
                     try:
                         main_stake_var[i]["enter_deFacto_price"] = bin_data.get_position_price(symbol)
+                        print(f'str73 {symbol}:  {main_stake_var[i]["enter_deFacto_price"]}  (defacto_prtice)')
                     except Exception as ex:
                         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
             if step == 3:
-                is_closing = -1
-                success_flag = False               
-                try:                                      
-                    target_sl_price = main_stake_var[i]["static_sl_price"] = round(main_stake_var[i]["enter_deFacto_price"] - (main_stake_var[i]["defender"] * self.STATIC_SL_Q * main_stake_var[i]["atr"]), main_stake_var[i]["step_size_for_price"])
+              
+                try:  
+                    static_defender = -1
+                    # print(main_stake_var[i]["enter_deFacto_price"], main_stake_var[i]["atr"], self.STATIC_SL_Q, self.STATIC_TP_Q, main_stake_var[i]["defender"])
+                    main_stake_var[i]["static_tp_price"], main_stake_var[i]["static_sl_price"] = self.checkpoint_calc(main_stake_var[i]["enter_deFacto_price"], main_stake_var[i]["atr"], self.STATIC_SL_Q, self.STATIC_TP_Q, main_stake_var[i]["defender"],main_stake_var[i]["price_precision"], static_defender, main_stake_var[i]["tick_size"]) 
 
-                    target_tp_price = main_stake_var[i]["static_tp_price"] = round(main_stake_var[i]["enter_deFacto_price"] + (main_stake_var[i]["defender"] * self.STATIC_TP_Q * main_stake_var[i]["atr"]), main_stake_var[i]["step_size_for_price"])
+                    print(f'static_tp_price:  {main_stake_var[i]["static_tp_price"]}, static_sl_price:  {main_stake_var[i]["static_sl_price"]}')
 
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
                 
                 try:  
-                    # sl static order                                     
-                    open_static_sl_order, success_flag = create_orders_obj.open_limit_order(main_stake_var[i], is_closing, target_sl_price)
-                    if success_flag:
-                        main_stake_var[i]["last_sl_order_id"] = open_static_sl_order["orderId"]                                                  
+                    # sl static order  
+                    is_closing = -1
+                    success_flag = False   
+                    target_price = main_stake_var[i]["static_sl_price"]
+                    market_type = 'STOP_MARKET'                                 
+                    open_static_sl_order, success_flag = create_orders_obj.make_order(main_stake_var[i], is_closing, target_price, market_type)
+                    print(f'open_static_sl_order  {open_static_sl_order}')
+                    if success_flag:                                                
                         main_stake_var[i]["done_level"] = 4    
-                        success_flag = False          
+                              
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
                 try:  
+ 
                     # tp static order 
-                    if main_stake_var[i]["done_level"] == 4:              
-                        open_static_tp_order, success_flag = create_orders_obj.open_limit_order(main_stake_var[i], is_closing, target_sl_price)
+                    is_closing = -1
+                    success_flag = False   
+                    target_price = main_stake_var[i]["static_sl_price"]
+                    market_type = 'TAKE_PROFIT_MARKET' 
+                    if main_stake_var[i]["done_level"] == 4: 
+                        open_static_tp_order, success_flag = create_orders_obj.make_order(main_stake_var[i], is_closing, target_price, market_type)     
+
+                        print(f'open_static_tp_order  {open_static_tp_order}')
                         if success_flag:                        
                             main_stake_var[i]["done_level"] = 5 
-             
+                
                 except Exception as ex:
                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")  
 
@@ -106,205 +135,121 @@ class SL_STRATEGYY():
         if step == 3:
             main_stake_var = [x for x in main_stake_var if x["done_level"] == 5]
             step = 4
-            return main_stake_var, step
+            return main_stake_var, step     
 
-    def sl_controller(self, main_stake):        
-        print(f"len_main_stake  {len(main_stake)}")   
-        main_stake, step = self.step_by_step_sl_assambler(self, main_stake, step)    
+    def trailling_sl_controller(self, main_stake):
+
+        print(f"len_main_stake  {len(main_stake)}")    
         done_flag = False
         main_stake_var = main_stake.copy()
         
         for i, _ in enumerate(main_stake): 
-            qnt = None 
-            step_size = None  
-            lev = None
-            open_market_order = None
-            open_static_sl_order = None
-            open_static_tp_order = None
+            
+            success_flag = False                       
             open_dinamic_sl_order = None
             cancel_order = None
-            try:
-                symbol = main_stake_var[i]["symbol"]                 
-                current_price = main_stake_var[i]["current_price"] 
-                defender = main_stake_var[i]["defender"]                               
-            except Exception as ex:
-                print(f"MONEY/stop_logic_1.py_str45:___{ex}")  
-                main_stake_var[i] = None    
-                continue 
 
-            if main_stake_var[i]["done_level"] == 5:
-                if defender == 1:
-                    if (current_price >= main_stake_var[i]["static_tp_price"]) or (current_price <= main_stake_var[i]["breakpointt"]):
+            symbol = main_stake_var[i]["symbol"] 
+            print(f"symbol  {symbol}")                
+            current_price = main_stake_var[i]["current_price"] 
+            print(f"current_price  {current_price}")
+            price_precision = main_stake_var[i]["price_precision"]
+            print(f"price_precision  {price_precision}")
+            defender = main_stake_var[i]["defender"]  
+            print(f"defender  {defender}")
+            print(f'last_sl_order_id {main_stake_var[i]["last_sl_order_id"]}')
+            enter_deFacto_price = main_stake_var[i]["enter_deFacto_price"]
+            print(f"enter_deFacto_price  {enter_deFacto_price}")
+            static_sl_price = main_stake_var[i]["static_sl_price"] 
+            print(f"static_sl_price  {static_sl_price}")
+            static_tp_price = main_stake_var[i]["static_tp_price"]
+            print(f"static_tp_price  {static_tp_price}")
+            # checkpointt = main_stake_var[i]["checkpointt"] 
+            # print(checkpointt)
+            # breakpointt = main_stake_var[i]["breakpointt"]  
+            # print(breakpointt) 
+            atr = main_stake_var[i]["atr"]  
+            print(f"atr  {atr}")
+            try: 
+                q_sl = self.TABULA_SL_TP_POINTS[1][0]
+                print(f"q_sl  {q_sl}")
+                q_tp = self.TABULA_SL_TP_POINTS[1][1] 
+                print(f"q_tp  {q_tp}") 
+            except:
+                pass     
+
+            if defender == 1:
+                if (current_price <= static_sl_price) or (current_price >= static_tp_price):
+                    main_stake_var[i]["done_level"] = 6
+                    done_flag = True
+                if main_stake_var[i]["breakpointt"] and main_stake_var[i]["checkpointt"]:
+                    if current_price <= main_stake_var[i]["breakpointt"]:
                         main_stake_var[i]["done_level"] = 6
                         done_flag = True
-                        
-                elif defender == -1:
-                    if (current_price <= main_stake_var[i]["static_tp_price"]) or (current_price >= main_stake_var[i]["breakpointt"]):
+
+            elif defender == -1:
+                if (current_price >= static_sl_price) or (current_price <= static_tp_price):
+                    main_stake_var[i]["done_level"] = 6
+                    done_flag = True
+                if main_stake_var[i]["breakpointt"] and main_stake_var[i]["checkpointt"]:
+                    if current_price >= main_stake_var[i]["breakpointt"]:
                         main_stake_var[i]["done_level"] = 6
-                        done_flag = True          
-                continue
+                        done_flag = True           
 
-            if not main_stake_var[i]['in_position']:         
-                enter_deJure_price = current_price         
-    
-                try:                    
-                    qnt, step_size = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO) 
-                    print(f"step_size__{step_size}")  
-                    qnt = round(qnt, step_size)
-                    main_stake_var[i]['qnt'] = qnt  
-                    main_stake_var[i]["step_size_for_price"] = step_size  
-                except Exception as ex:
-                    print(f"MONEY/stop_logic_1.py_str57:___{ex}")  
-                    main_stake_var[i] = None 
-                    continue        
-                try:
-                    if qnt:                        
+            if len(self.TABULA_SL_TP_POINTS) != 0:                    
+                if not main_stake_var[i]["checkpointt_flag"]:
+                    if not main_stake_var[i]["checkpointt"] and not main_stake_var[i]["breakpointt"]:
                         try:
-                            lev = create_orders_obj.set_leverage(symbol)
-                            # print(f"str59:  {lev}") 
-                        except Exception as ex:           
-                            print(f"MONEY/stop_logic_1.py_str64:___{ex}")
-                        if lev and 'leverage' in lev and lev['leverage'] == my_params.LEVERAGE:
-                            pass 
-                        else:
-                            main_stake_var[i] = None 
-                            main_stake_var[i]["position_problem"].append(lev)   
-                            continue
-                     
-                        is_closing = 1
-                        type_market = 'MARKET' 
-                        target_price = None 
-                        try:          
-                            open_market_order = create_orders_obj.make_order(main_stake_var[i], is_closing, type_market, target_price)
-                            print(f"str74:  {open_market_order}") 
-                        except Exception as ex:           
-                            print(f"MONEY/stop_logic_1.py_str76:___{ex}")
-                            main_stake_var[i] = None 
-                            continue  
-                    else:
-                        main_stake_var[i] = None 
-                        continue                       
-                except Exception as ex:           
-                    print(f"MONEY/stop_logic_1.py_str83:___{ex}")
-                    main_stake_var[i] = None 
-                    continue  
+                            static_defender = 1
+                            main_stake_var[i]["checkpointt"], main_stake_var[i]["breakpointt"] = self.checkpoint_calc(enter_deFacto_price, atr, q_sl, q_tp, defender, price_precision, static_defender) 
+                            print(f'checkpointt  {main_stake_var[i]["checkpointt"]}, breakpointt  {main_stake_var[i]["breakpointt"]}')   
+                        except Exception as ex:
+                            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")               
 
-                if open_market_order and 'status' in open_market_order and open_market_order['status'] == 'NEW':
-                    print("open market order")
-                    main_stake_var[i]['in_position'] = True 
-                    main_stake_var[i]["done_level"] = 1
-                           
-                    try:
-                        enter_deFacto_price = bin_data.get_position_price(symbol)
-                        # print(f"str80: {enter_deFacto_price}")
-                        
-                        main_stake_var[i]["enter_deFacto_price"] = enter_deFacto_price
-                    except Exception as ex:           
-                        print(f"MONEY/stop_logic_1.py_str98:___{ex}")  
-                        main_stake_var[i] = None 
-                        continue  
-                    # ///////////////////////////////////////////////////// 
-                    is_closing = -1
-                    type_market = 'LIMIT'                    
-                    # /////////////////////////////////////////////////////       
-                    try:
-                        # sl static order   
-                        print('sl static order')                     
-                        target_price = round(enter_deFacto_price - (defender * self.STATIC_SL_Q * main_stake_var[i]["atr"]), step_size)
-                        print(f"target_price__str113: {target_price}")
-                        main_stake_var[i]["static_sl_price"] = target_price
-                        open_static_sl_order = create_orders_obj.make_order(main_stake_var[i], is_closing, type_market, target_price)
-                        print(f"str117: {open_static_sl_order}")
-                        if open_static_sl_order and 'status' in open_static_sl_order and open_static_sl_order['status'] == 'NEW':
-                            main_stake_var[i]["last_sl_order_id"] = open_static_sl_order["orderId"]                            
-                            main_stake_var[i]["done_level"] = 2 
-                        else:
-                            main_stake_var[i]["position_problem"].append(open_static_sl_order)               
-                    except Exception as ex:           
-                        print(f"MONEY/stop_logic_1.py_str117:___{ex}")
-                        main_stake_var[i]["position_problem"].append(open_static_sl_order)
-                        continue  
-                    try:
-                        if main_stake_var[i]["done_level"] == 2:
-                            # tp static order  
-                            target_price = round(enter_deFacto_price + (defender * self.STATIC_TP_Q * main_stake_var[i]["atr"]), step_size)
-                            main_stake_var[i]["static_tp_price"] = target_price
-                            open_static_tp_order = create_orders_obj.make_order(main_stake_var[i], is_closing, type_market, target_price)
-                            print(f"str126: {open_static_tp_order}")
-                            if open_static_tp_order and 'status' in open_static_tp_order and open_static_tp_order['status'] == 'NEW':
-                                main_stake_var[i]["static_tp_order_id"] = open_static_tp_order["orderId"]                            
-                                main_stake_var[i]["done_level"] = 3  
-                            else:
-                                main_stake_var[i]["position_problem"].append(open_static_tp_order)              
-                    except Exception as ex:           
-                        print(f"MONEY/stop_logic_1.py_str133:___{ex}") 
-                        main_stake_var[i]["position_problem"].append(open_static_tp_order) 
-                        continue                     
-                else:
-                    main_stake_var[i] = None
-                    continue                    
-            if main_stake_var[i]['in_position']: 
-                if len(self.TABULA_SL_TP_POINTS) != 0:                    
-                    if main_stake_var[i]["done_level"] == 3:
-                        main_stake_var[i]["checkpointt"] = round(main_stake_var[i]["enter_deFacto_price"] + (defender * main_stake_var[i]["atr"] * self.TABULA_SL_TP_POINTS[1][1]), step_size)
-                        main_stake_var[i]["breakpointt"] = round(main_stake_var[i]["enter_deFacto_price"] + (defender * main_stake_var[i]["atr"] * self.TABULA_SL_TP_POINTS[1][0]), step_size)                      
-                        main_stake_var[i]["done_level"] = 4
-                    if main_stake_var[i]["done_level"] == 4:
-                        if defender == 1:
-                            if current_price >= main_stake_var[i]["checkpointt"]:
-                                checkpointt_flag = True 
-                            elif (current_price <= main_stake_var[i]["static_sl_price"]) or (current_price <= main_stake_var[i]["breakpointt"]):
-                                main_stake_var[i]["done_level"] = 6
-                                done_flag = True
-                        elif defender == -1:
-                            if current_price <= main_stake_var[i]["checkpointt"]:
-                                checkpointt_flag = True 
-                            elif (current_price >= main_stake_var[i]["static_sl_price"]) or (current_price >= main_stake_var[i]["breakpointt"]):
-                                main_stake_var[i]["done_level"] = 6
-                                done_flag = True
-                        if checkpointt_flag:                        
-                            type_market = 'LIMIT'
-                            is_closing = -1
-                            target_price = main_stake_var[i]["breakpointt"]
-                            try:
-                                open_dinamic_sl_order = create_orders_obj.make_order(main_stake_var[i], is_closing, type_market, target_price)
-                                print(f"str169:  {open_dinamic_sl_order}")                              
-                                if open_dinamic_sl_order and 'status' in open_dinamic_sl_order and open_dinamic_sl_order['status'] == 'NEW':
-                                    checkpointt_flag = False
-                                    self.TABULA_SL_TP_POINTS.pop(0)                                    
-                                    try:                                        
-                                        cancel_order = create_orders_obj.cancel_order_by_id(symbol, main_stake_var[i]["last_sl_order_id"])
-                                        print(f"str175: {cancel_order}")
-                                        if cancel_order and 'status' in cancel_order and cancel_order['status'] == 'CANCELED':
-                                            main_stake_var[i]["last_sl_order_id"] = open_dinamic_sl_order["orderId"]
-                                            main_stake_var[i]["done_level"] = 3
-                                        else:
-                                            main_stake_var[i]["position_problem"].append(cancel_order)
-                                    except Exception as ex:           
-                                        print(f"MONEY/stop_logic_1.py_str177:___{ex}")
-                                        main_stake_var[i]["position_problem"].append(cancel_order)
-                                else:
-                                    main_stake_var[i]["position_problem"].append(open_static_sl_order)               
-                            except Exception as ex:   
-                                checkpointt_flag = False        
-                                print(f"MONEY/stop_logic_1.py_str183:___{ex}")
-                                main_stake_var[i]["position_problem"].append(cancel_order)
-                else:
-                    main_stake_var[i]["done_level"] = 5  
+                    if defender == 1:
+                        if current_price >= main_stake_var[i]["checkpointt"]:
+                            print('checkpointt_flag!')
+                            main_stake_var[i]["checkpointt_flag"] = True 
 
-        main_stake_var = list(filter(lambda x: x != None, main_stake_var))
-        print(f"len_main_stake_var  {len(main_stake_var)}")
+                    elif defender == -1:
+                        if current_price <= main_stake_var[i]["checkpointt"]:
+                            print('checkpointt_flag!')
+                            main_stake_var[i]["checkpointt_flag"] = True
+
+                if main_stake_var[i]["checkpointt_flag"]:
+                    try:
+                        if main_stake_var[i]["last_sl_order_id"]:                                        
+                            cancel_order, success_flag = create_orders_obj.cancel_order_by_id(symbol, main_stake_var[i]["last_sl_order_id"])
+                            # print(f"str175: {cancel_order}")
+                        if success_flag:
+                            print('The canceled last order was Successully') 
+                            
+                        else:
+                            print('The canceled last order was unsuccessully')                            
+                    except Exception as ex:
+                        logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+                    try:
+                        is_closing = -1
+                        success_flag = False   
+                        target_price = main_stake_var[i]["breakpointt"]
+                        market_type = 'LIMIT'                                 
+                        open_static_sl_order, success_flag = create_orders_obj.make_order(main_stake_var[i], is_closing, target_price, market_type)
+                        print(f'open_static_sl_order  {open_static_sl_order}')
+     
+                        if success_flag:
+                            main_stake_var[i]["checkpointt_flag"] = False
+                            self.TABULA_SL_TP_POINTS.pop(0) 
+                            main_stake_var[i]["last_sl_order_id"] = open_dinamic_sl_order["orderId"] 
+                            main_stake_var[i]["checkpointt"], main_stake_var[i]["breakpointt"] = None, None 
+                 
+                    except Exception as ex:
+                        logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+            else:
+                print('len(self.TABULA_SL_TP_POINTS) = 0!')
+        # print(f"len_main_stake_var  {len(main_stake_var)}")
         
         return main_stake_var, done_flag
     
 sl_strategies = SL_STRATEGYY()
-
-# print(sl_strategies.TABULA_SL_TP_POINTS)
-# print(sl_strategies.TABULA_SL_TP_POINTS.pop(0))
-# print(sl_strategies.TABULA_SL_TP_POINTS)
-# print(sl_strategies.STATIC_SL_Q)
-# print(sl_strategies.STATIC_TP_Q)
-# print(sl_strategies.TABULA_SL_TP_POINTS)
-
 
 # python -m MONEY.stop_logic

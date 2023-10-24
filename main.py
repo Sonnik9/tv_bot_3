@@ -6,8 +6,9 @@ from pparamss import my_params
 from ENGIN.main_strategy_controller import strateg_controller   
 from UTILS.waiting_candle import kline_waiter
 # from UTILS.indicators import calculate_atr
-# from UTILS.calc_qnt import calc_qnt_func
+from UTILS.calc_qnt import calc_qnt_func
 from UTILS.clean_cashe import cleanup_cache
+from UTILS.indicators import calculate_atr
 from MONEY.asumm import asum_counter
 from MONEY.stop_logic import sl_strategies
 from pparamss import my_params
@@ -18,6 +19,14 @@ import asyncio
 import aiohttp
 import json
 import sys 
+
+import logging
+import os
+import inspect
+
+logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
+
 
 async def price_monitoring(main_stake, data_callback):
     url = f'wss://stream.binance.com:9443/stream?streams='
@@ -30,8 +39,9 @@ async def price_monitoring(main_stake, data_callback):
             data_prep = None   
             ws = None            
             first_iter_flag = False
-            done_flag = False
-            intermedeate_data_list = []    
+            done_flag = False             
+            counter = 0  
+            step = 0
                           
             try:
                 # print('hi')
@@ -59,16 +69,18 @@ async def price_monitoring(main_stake, data_callback):
                                     close_price = float(data.get('data',{}).get('k',{}).get('c'))  
                                     # print(close_price) 
                                     
-                                    for item in main_stake_var:
+                                    for i, item in enumerate(main_stake_var):
                                         if symbol == item["symbol"]:
-                                            intermedeate_data_list.append((symbol, close_price))                            
+                                            main_stake_var[i]["current_price"] = close_price
+                                            counter += 1                          
                                 except:
                                     pass
                                 
-                                if len(intermedeate_data_list) == len(main_stake_var):
-                                    main_stake_var, done_flag = await data_callback(intermedeate_data_list, main_stake_var)
-                                    intermedeate_data_list = [] 
-                                    first_iter_flag = True                           
+                                if counter == len(main_stake_var):
+                                    main_stake_var, done_flag, step = await data_callback(main_stake_var, step)
+                                    counter = 0
+                                    first_iter_flag = True   
+                                    print(f"step  {step}")                        
 
                                     if done_flag or len(main_stake_var) == 0:                               
                                         return 
@@ -82,80 +94,55 @@ async def price_monitoring(main_stake, data_callback):
     finally:
         await ws.close()
         return main_stake_var
+   
+async def process_data(main_stake, step):
 
-def done_confidencer(main_stake):
-
-    main_stake_var = main_stake.copy()
-    open_pos = None
-    cancel_all_orders_answer = None
-    open_pos_symbol_list = []
-    try_to_close_by_market_list = []
-
-    open_pos = create_orders_obj.get_open_positions()   
-    open_pos_symbol_list = [x["symbol"] for x in open_pos]
-
-    for i, item in enumerate(main_stake):
-        if item["done_level"] == 6:
-            if item["symbol"] in open_pos_symbol_list:
-                try_to_close_by_market_list.append(item)
-            else:
-                main_stake_var[i]["close_position"] = True
-    try: 
-        good_news_symbol_list, bad_news_symbol_list = [], []   
-        good_news_symbol_list, bad_news_symbol_list = create_orders_obj.try_to_close_by_market_open_position_by_item(try_to_close_by_market_list)
-        if good_news_symbol_list:           
-            for i, item in enumerate(main_stake):
-                if item["done_level"] == 6:
-                    if item["symbol"] in good_news_symbol_list:
-                        main_stake_var[i]["close_position"] = True           
-        
-        symbol_list_to_cancel_orders = [x["symbol"] for x in main_stake_var if x["close_position"]]
-        cancel_all_orders_answer = create_orders_obj.cancel_all_orders_for_position(symbol_list_to_cancel_orders)
-    except Exception as ex:
-        print(ex)
-
-    return main_stake_var, bad_news_symbol_list, cancel_all_orders_answer 
-    
-async def process_data(intermediate_data_list, main_stake):
-
-    symbol_to_item = {item['symbol']: item for item in main_stake}    
     done_flag = False
-    for symbol, current_price in intermediate_data_list:
-        if symbol in symbol_to_item:
-            symbol_to_item[symbol]['current_price'] = current_price
+    main_stake_var = main_stake.copy()
 
-    main_stake = list(symbol_to_item.values())
-
-    try:
-        main_stake, done_flag = sl_strategies.sl_controller(main_stake)
-    except Exception as ex:
-        print(f"main_101str:__ {ex}")
-
-    return main_stake, done_flag
+    if step != 4:
+        try:
+            main_stake_var, step = sl_strategies.usual_orders_assambler(main_stake_var, step)            
+        except Exception as ex:
+            print(f"main_105str:__ {ex}")
+    elif step == 4:
+        return main_stake, done_flag, step
+        # sys.exit(0)
+        try:
+            main_stake_var, done_flag = sl_strategies.trailling_sl_controller(main_stake_var)      
+        except Exception as ex:
+            print(f"main_111str:__ {ex}")
+    return main_stake, done_flag, step
 
 def stake_generator(usual_defender_stake):
+    
     universal_stake = [
         {
             # "approximate_profit": None,
             "symbol": s,
             "defender": d,
-            "enter_deFacto_price": None,            
+            "enter_deFacto_price": None, 
+            "recalc_depo": None,           
             "current_price": None,            
-            "in_position": False,
+            # "in_position": False,
             "close_position": False,
             "qnt": None, 
-            "step_size_for_price": None,       
-            "atr": atr,
+            "price_precision": None,  
+            "tick_size": None,   
+            "atr_aprox": atr_aprox,
+            "atr": None,
+            "rra": rra,
             "last_sl_order_id": None,            
             "static_tp_order_id": None,
             "static_tp_price": None,
             "static_sl_price": None,
+            "checkpointt_flag": False,
             "checkpointt": None,
             "breakpointt": None,
             "done_level": 0,
             "position_problem": []       
         }
-            for s, d, atr in usual_defender_stake            
+            for s, d, atr_aprox, rra in usual_defender_stake            
     ] 
 
     return universal_stake
@@ -175,11 +162,16 @@ async def main(start_time):
     except Exception as ex:
         print(f"main__15:\n{ex}")    
     print(len(top_coins)) 
-    print(top_coins) 
+    # print(top_coins) 
+    # 'ZECUSDT'
+    top_coins = [x for x in top_coins if x != 'ZECUSDT' and x != 'MKRUSDT']
+    # print(top_coins)
     # top_coins = [x.replace('USDT', '') for x in top_coins]
     # print(top_coins)
     # finish_time = time.time() - start_time    
     # print(f"Общее время поиска:  {math.ceil(finish_time)} сек")
+
+    firstt = False
 
     # sys.exit() 
     try:
@@ -190,6 +182,8 @@ async def main(start_time):
         print(f"main__24:\n{ex}")
     
     while True:
+        if firstt:
+            break
         try:
             # await asyncio.sleep(2)
             if len(total_raport_list) >= 1:
@@ -200,17 +194,17 @@ async def main(start_time):
                 cleanup_cache()
                 break
 
-            now = datetime.now()
-            desired_timezone = pytz.timezone('Europe/Kiev')
-            now_in_desired_timezone = now.astimezone(desired_timezone)
-            current_time = now_in_desired_timezone.strftime('%H:%M')
-            print(current_time)
-            if time(0, 0) <= time(int(current_time.split(':')[0]), int(current_time.split(':')[1])) <= time(1, 0):
-                print('it is time to assuming!') 
-                if len(total_raport_list) >= 1:   
-                    pass            
-                    # asum_counter(total_raport_list)
-                break
+            # now = datetime.now()
+            # desired_timezone = pytz.timezone('Europe/Kiev')
+            # now_in_desired_timezone = now.astimezone(desired_timezone)
+            # current_time = now_in_desired_timezone.strftime('%H:%M')
+            # print(current_time)
+            # if time(0, 0) <= time(int(current_time.split(':')[0]), int(current_time.split(':')[1])) <= time(1, 0):
+            #     print('it is time to assuming!') 
+            #     if len(total_raport_list) >= 1:   
+            #         pass            
+            #         # asum_counter(total_raport_list)
+            #     break
 
             try:
                 usual_defender_stake = strateg_controller.main_strategy_control_func(top_coins)
@@ -241,24 +235,37 @@ async def main(start_time):
                             print(f"212___{ex}") 
             except Exception as ex:
                 print(f"214___{ex}")
+
+            try:
+                main_stakee = main_stake.copy()               
+
+                for i, item in enumerate(main_stakee):
+                    # print(item["symbol"])
+                    klines = None
+                    atr = None
+                    klines = bin_data.get_klines(item["symbol"])
+                    atr = calculate_atr(klines)
+                    if atr:
+                        main_stake[i]["atr"] = atr 
+                    else:
+                        main_stake.pop(i)
+            except:
+                pass
+            # print(main_stake)
+            # sys.exit()
                              
             # ///////////////////////////////////////////////////////////////////////
             try:
-                # print(main_stake)
-                # sys.exit()
                 main_stake = await price_monitoring(main_stake, process_data)
-                if main_stake: 
-                    main_stake, _, _ = done_confidencer(main_stake)
+                firstt = True
+                # if main_stake: 
+                #     main_stake, _, _ = create_orders_obj.close_position_confidencer(main_stake)
                         
-                    intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
-                    total_raport_list += intermedeate_raport_list
-                    main_stake = [x for x in main_stake if not x["close_position"]]
-                    main_stake_busy_symbols_list = [x['symbol'] for x in main_stake]
-             
-                # if len(main_stake) == 0:
-                #     sys.exit()
-                    # print(total_raport_list)
-                # break
+                intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
+                total_raport_list += intermedeate_raport_list
+                main_stake = [x for x in main_stake if not x["close_position"]]
+                main_stake_busy_symbols_list = [x['symbol'] for x in main_stake]
+
             except Exception as ex:
                 print(f"main__192:\n{ex}")         
 
