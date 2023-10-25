@@ -56,11 +56,34 @@ def count_multipliter_places(number):
             return len(number_str.split('.')[1])
     return 0
 
-a = 1.2378347683478
-b = 0.1 
-q = count_multipliter_places(b)
+# a = 1.2378347683478
+# b = 0.1 
+# q = count_multipliter_places(b)
 
-c = round(a,q)
-print(c)
+# c = round(a,q)
+# print(c)
 
+from decimal import Decimal, ROUND_HALF_UP
+import math
+
+tick_size = 0.001
+d = 5.12656748759348593457893048573048573048957
+r = 5.12656748759348593457893048573048573048957
+c = 5.12656748759348593457893048573048573048957
+f = 5.12656748759348593457893048573048573048957
+value = Decimal(str(d))
+rounded_value = value.quantize(Decimal(str(tick_size)), rounding=ROUND_HALF_UP)
+print(f"decimal:  {rounded_value}")
+# //////////////////////////////////////////////////
+tick_size = count_multipliter_places(tick_size) 
+r = round(r, tick_size)
+print(f"round:  {r}")
+# //////////////////////////////////////////////////
+c = math.ceil(c * 10 ** tick_size) / (10 ** tick_size)
+print(f"ceil:  {c}")
+print(f"tick_size:  {tick_size}")
+
+f = math.floor(f * 10 ** tick_size) / (10 ** tick_size)
+print(f"floor:  {f}")
+print(f"tick_size:  {tick_size}")
 

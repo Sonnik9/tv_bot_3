@@ -39,16 +39,17 @@ class CREATE_BINANCE_ORDER(Configg):
         method = 'POST'
         params["symbol"] = item["symbol"] 
         params["type"] = market_type
-        
-        if market_type == 'MARKET' or market_type == 'LIMIT':
-            params["quantity"] = item['qnt']
+        params["quantity"] = item['qnt']
+        # print(item["qnt"])
+     
         if market_type == 'LIMIT':            
             params["price"] = target_price
             params["timeinForce"] = 'GTC' 
+            
         if market_type == 'STOP_MARKET' or market_type == 'TAKE_PROFIT_MARKET':
             params['stopPrice'] = target_price
-            params['closePosition'] = True
- 
+            params['closePosition'] = True 
+  
         if item["defender"] == 1*is_closing:
             side = 'BUY'
         elif item["defender"] == -1*is_closing:
@@ -242,101 +243,17 @@ create_orders_obj = CREATE_BINANCE_ORDER()
 # item["qnt"] = 0.001
 # item["atr"] = 475
 # is_closing = 1
-# type_market = 'MARKET'
-# item["defender"] = 1
-# target_price = None 
-# # open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
-
-# # print(open_market_order)
-# type_market = 'TRAILING_STOP_MARKET'
-# is_closing = -1
-# item["qnt"] = 0.001
-# target_price = None
-# item["enter_deFacto_price"] = 31276
-# open_trailing_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
-# print(open_trailing_order)
-
-
-
-# open_pos = create_orders_obj.get_open_positions(symbol)
-# print(open_pos)
-
-# answer_list = create_orders_obj.try_to_close_by_market_all_open_positions()
-# print(answer_list)
-
-
-
-# {'symbol': 'BTCUSDT', 'positionAmt': '0.001', 'entryPrice': '28050.0', 'breakEvenPrice': '28061.22', 'markPrice': '28355.00586813', 'unRealizedProfit': '0.30500586', 'liquidationPrice': '0', 'leverage': '1', 'maxNotionalValue': '5.0E8', 'marginType': 'cross', 'isolatedMargin': '0.00000000', 'isAutoAddMargin': 'false', 'positionSide': 'BOTH', 'notional': '28.35500586', 'isolatedWallet': '0', 'updateTime': 1697469250488, 'isolated': False, 'adlQuantile': 1}
-
-
-
-# all_orders = None 
-# make_order = None 
-# item = {}
-# symbol = 'BTCUSDT'
-# item["symbol"] = 'BTCUSDT'
-# item["qnt"] = 0.001
-# is_closing = 1
-# type_market = 'MARKET'
-# item["defender"] = 1
-# target_price = None
-
-# make_order = create_orders_obj.make_order(item, is_closing, type_market, target_price)
-# print(make_order)
-# url = None
-# symbol_info = bin_data.get_excangeInfo(item["symbol"])
-
-# symbol_data = None
-# if symbol_info:
-#     symbol_data = next((item for item in symbol_info["symbols"] if item['symbol'] == symbol), None)
-
-# print(symbol_data)
-
-# position_price = None
-
-# position_price = bin_data.get_position_price(symbol)
-
-# print(position_price)
-
-
-
-
-# is_closing = -1
-# target_price = make_order["price"] * 500 * 0.9
 # type_market = 'LIMIT'
-# make_order = create_orders_obj.make_order(item, is_closing, type_market, target_price)
-# print(make_order)
-
-# is_closing = -1
-# target_price = make_order["price"] * 500 * 1.2
-# type_market = 'LIMIT'
-# make_order = create_orders_obj.make_order(item, is_closing, type_market, target_price)
-# print(make_order)
-
-# target_price = 26500
 # item["defender"] = 1
-# make_order = create_orders_obj.make_order(item, is_closing, type_market, target_price)
-# print(make_order)
+# target_price = 30000 
+# open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
 
-# time.sleep(5)
-
-# all_orders = create_orders_obj.get_all_orders()
-# print(all_orders)
-
-# item["last_sl_order_id"] = '3486091588'
-# cancel_orders = None 
-# cancel_orders = create_orders_obj.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
-# print(cancel_orders)
-
-
-# resp = None
-# resp = create_orders_obj.close_all_position()
-# print(resp)
+# print(open_market_order)
 
 # python -m API.create_order
 
-# {'orderId': 3486091588, 'symbol': 'BTCUSDT', 'status': 'CANCELED', 'clientOrderId': '6TNC4fs0Xzmp1Dth3o7lLh', 'price': '30500.00', 'avgPrice': '0.00', 'origQty': '0.001', 'executedQty': '0.000', 'cumQty': '0.000', 'cumQuote': '0.00000', 'timeInForce': 'GTC', 'type': 'LIMIT', 'reduceOnly': False, 'closePosition': False, 'side': 'SELL', 'positionSide': 'BOTH', 'stopPrice': '0.00', 'workingType': 'CONTRACT_PRICE', 'priceProtect': False, 'origType': 'LIMIT', 'priceMatch': 'NONE', 'selfTradePreventionMode': 'NONE', 'goodTillDate': 0, 'updateTime': 1697468019394}
+        
+        # if market_type == 'MARKET' or market_type == 'LIMIT' or market_type == 'TAKE_PROFIT_MARKET':
+   
 
 
-        # ['LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', 'TRAILING_STOP_MARKET']
-        # print(item)

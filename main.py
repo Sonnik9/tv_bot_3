@@ -13,6 +13,7 @@ from MONEY.asumm import asum_counter
 from MONEY.stop_logic import sl_strategies
 from pparamss import my_params
 from API.bin_data_get import bin_data
+from API.websockett import price_monitoring, process_data
 import pytz
 from datetime import datetime, time
 import asyncio
@@ -27,120 +28,31 @@ import inspect
 logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
 current_file = os.path.basename(__file__)
 
-
-async def price_monitoring(main_stake, data_callback):
-    url = f'wss://stream.binance.com:9443/stream?streams='
-    main_stake_var = main_stake.copy()
-    streams = [f"{k['symbol'].lower()}@kline_1s" for k in main_stake_var]
-    print(f"start_socket_stake:___{len(main_stake_var)}")
-
-    try:
-        while True:   
-            data_prep = None   
-            ws = None            
-            first_iter_flag = False
-            done_flag = False             
-            counter = 0  
-            step = 0
-                          
-            try:
-                # print('hi')
-                async with aiohttp.ClientSession() as session:
-                    async with session.ws_connect(url) as ws:
-                        subscribe_request = {
-                            "method": "SUBSCRIBE",
-                            "params": streams,
-                            "id": 9457945
-                        }
-                        try:
-                            data_prep = await ws.send_json(subscribe_request)                            
-                        except:
-                            pass
-                   
-                        if not data_prep and first_iter_flag:                                             
-                            await asyncio.sleep(7)
-                            continue                       
-
-                        async for msg in ws:                            
-                            if msg.type == aiohttp.WSMsgType.TEXT:
-                                try:                                    
-                                    data = json.loads(msg.data)                                             
-                                    symbol = data.get('data',{}).get('s')                                    
-                                    close_price = float(data.get('data',{}).get('k',{}).get('c'))  
-                                    # print(close_price) 
-                                    
-                                    for i, item in enumerate(main_stake_var):
-                                        if symbol == item["symbol"]:
-                                            main_stake_var[i]["current_price"] = close_price
-                                            counter += 1                          
-                                except:
-                                    pass
-                                
-                                if counter == len(main_stake_var):
-                                    main_stake_var, done_flag, step = await data_callback(main_stake_var, step)
-                                    counter = 0
-                                    first_iter_flag = True   
-                                    print(f"step  {step}")                        
-
-                                    if done_flag or len(main_stake_var) == 0:                               
-                                        return 
-
-            except Exception as e:
-                print(f"An error occurred: {e}")
-                await asyncio.sleep(7)
-                continue
-    except:
-        pass
-    finally:
-        await ws.close()
-        return main_stake_var
-   
-async def process_data(main_stake, step):
-
-    done_flag = False
-    main_stake_var = main_stake.copy()
-
-    if step != 4:
-        try:
-            main_stake_var, step = sl_strategies.usual_orders_assambler(main_stake_var, step)            
-        except Exception as ex:
-            print(f"main_105str:__ {ex}")
-    elif step == 4:
-        return main_stake, done_flag, step
-        # sys.exit(0)
-        try:
-            main_stake_var, done_flag = sl_strategies.trailling_sl_controller(main_stake_var)      
-        except Exception as ex:
-            print(f"main_111str:__ {ex}")
-    return main_stake, done_flag, step
-
 def stake_generator(usual_defender_stake):
     
     universal_stake = [
-        {
-            # "approximate_profit": None,
+        {            
             "symbol": s,
             "defender": d,
             "enter_deFacto_price": None, 
             "recalc_depo": None,           
-            "current_price": None,            
-            # "in_position": False,
+            "current_price": None,           
             "close_position": False,
             "qnt": None, 
             "price_precision": None,  
-            "tick_size": None,   
-            "atr_aprox": atr_aprox,
-            "atr": None,
-            "rra": rra,
-            "last_sl_order_id": None,            
-            "static_tp_order_id": None,
+            "tick_size": None,
+            "atr": None,           
+            "last_sl_order_id": None,           
             "static_tp_price": None,
             "static_sl_price": None,
             "checkpointt_flag": False,
             "checkpointt": None,
             "breakpointt": None,
-            "done_level": 0,
-            "position_problem": []       
+            "done_level": 0
+            # "approximate_profit": None,
+            # "in_position": False,  
+            # "atr_aprox": atr_aprox,
+            # "rra": rra,         
         }
             for s, d, atr_aprox, rra in usual_defender_stake            
     ] 
@@ -164,7 +76,8 @@ async def main(start_time):
     print(len(top_coins)) 
     # print(top_coins) 
     # 'ZECUSDT'
-    top_coins = [x for x in top_coins if x != 'ZECUSDT' and x != 'MKRUSDT']
+    problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT']
+    top_coins = [x for x in top_coins if x not in problem_pairs]
     # print(top_coins)
     # top_coins = [x.replace('USDT', '') for x in top_coins]
     # print(top_coins)
@@ -176,7 +89,7 @@ async def main(start_time):
     # sys.exit() 
     try:
         wait_time = kline_waiter(my_params.KLINE_TIME, my_params.TIME_FRAME)
-        print(f"waiting time to close last candle is: {wait_time} sec")
+        # print(f"waiting time to close last candle is: {wait_time} sec")
         # await asyncio.sleep(wait_time)
     except Exception as ex:
         print(f"main__24:\n{ex}")
@@ -208,7 +121,7 @@ async def main(start_time):
 
             try:
                 usual_defender_stake = strateg_controller.main_strategy_control_func(top_coins)
-                print(len(usual_defender_stake))
+                # print(len(usual_defender_stake))
                 usual_defender_stake = [x for x in usual_defender_stake if x[0] not in main_stake_busy_symbols_list]
                 # print(usual_defender_stake)
             except Exception as ex:
@@ -256,10 +169,12 @@ async def main(start_time):
                              
             # ///////////////////////////////////////////////////////////////////////
             try:
+                # main_stake = [{'symbol': 'ETHUSDT', 'defender': 1, 'enter_deFacto_price': None, 'recalc_depo': None, 'current_price': None, 'close_position': False, 'qnt': None, 'price_precision': None, 'tick_size': None, 'atr_aprox': 94.46000000000004, 'atr': 75.36071428571431, 'rra': 301.10690804, 'last_sl_order_id': None, 'static_tp_price': None, 'static_sl_price': None, 'checkpointt_flag': False, 'checkpointt': None, 'breakpointt': None, 'done_level': 0,}]
+
                 main_stake = await price_monitoring(main_stake, process_data)
                 firstt = True
-                # if main_stake: 
-                #     main_stake, _, _ = create_orders_obj.close_position_confidencer(main_stake)
+                if main_stake: 
+                    main_stake, _, _ = create_orders_obj.close_position_confidencer(main_stake)
                         
                 intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
                 total_raport_list += intermedeate_raport_list
