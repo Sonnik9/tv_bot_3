@@ -7,7 +7,7 @@ class Parameters:
         # self.test_flag = False # -- real
         self.TEST_FLAG = True # -- test
         self.DEPO = 25
-        self.LEVERAGE = 1
+        self.LEVERAGE = 2
         # self.SLIPPAGE_COEFFICIENT = 0.005  # Коэффициент погрешности 0.5%         
         self.MAIN_STRATEGY_NUMBER = 1
         self.BUNCH_VARIANT = 1
@@ -29,7 +29,7 @@ class TEMPLATES(Parameters):
             self.SOLI_DEO_GLORIA,            
             [[fibonacci_levels[6], fibonacci_levels[5]], [[fibonacci_levels[1] * 0.5,fibonacci_levels[1]], [fibonacci_levels[2] * 0.5, fibonacci_levels[2]], [fibonacci_levels[3] * 0.5, fibonacci_levels[3]], [fibonacci_levels[4] * 0.5, fibonacci_levels[4]]]],
             [[0.9, 1.2], [[0.2, 0.4], [0.3, 0.6], [0.45, 0.9], [0.55, 1.11]]],
-            [[2.1, 0.16], [[0.5, 0.7], [0.81, 0.9]]]
+            [[2.1, 0.09], [[0.5, 0.7], [0.81, 0.9]]]
         ]
         self.TABULA_STATIC_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][0]        
         self.TABULA_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][1] 

@@ -112,8 +112,8 @@ class UTILS_FOR_ORDERS(CREATE_BINANCE_ORDER):
 # ///////////////////////////////////////////////////////////////////////////////////////////////////
 
         cancel_all_orders_for_position_candidate_symbol_list = [x["symbol"] for x in main_stake_var if x["done_level"] == 6]
-        _ = self.cancel_all_orders_for_position(cancel_all_orders_for_position_candidate_symbol_list)
-
+        cancel_all_orders_answer = self.cancel_all_orders_for_position(cancel_all_orders_for_position_candidate_symbol_list)
+        print(cancel_all_orders_answer)
 # //////////////////////////////////////////////////////////////////////////////////////////////////
 
         open_pos = self.get_open_positions()   

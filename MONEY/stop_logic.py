@@ -121,18 +121,22 @@ class SL_STRATEGYY():
             main_stake_var = [x for x in main_stake_var if x["done_level"] == 3]
             # main_stake_var = list(filter(lambda x: x != None, main_stake_var))
             # print(f"chenging_len(main_stake_var)  {len(main_stake_var)}")
-            step = 3
+            if my_params.SL_STRATEGY_NUMBER != 1:
+                step = 3
+            else:
+                step = 4
             return main_stake_var, step
-        if step == 3:
-            main_stake_var = [x for x in main_stake_var if x["done_level"] == 5]
-            step = 4
-            return main_stake_var, step     
+        if my_params.SL_STRATEGY_NUMBER != 1:
+            if step == 3:
+                main_stake_var = [x for x in main_stake_var if x["done_level"] == 5]
+                step = 4
+                return main_stake_var, step     
 
-    def trailling_sl_controller(self, main_stake, time_to_check_open_positions):
+    def trailling_sl_controller(self, main_stake, step):
 
         # print(f"len_main_stake  {len(main_stake)}")    
         done_flag = False
-        main_stake_var = main_stake.copy()
+        main_stake_var = main_stake.copy()       
         
         for i, _ in enumerate(main_stake): 
 
@@ -160,15 +164,7 @@ class SL_STRATEGYY():
                 q_trailing_tp = self.trailing_sl_levels[1][1] 
                 # print(f"q_trailing_tp  {q_trailing_tp}") 
             except:
-                pass  
-
-            if time_to_check_open_positions == 61:
-                open_pos = orders_utilss.get_open_positions()            
-                open_pos_symbol_list = [x["symbol"] for x in open_pos]
-                if symbol not in open_pos_symbol_list:
-                    main_stake_var[i]["done_level"] = 6
-                    done_flag = True 
-                    time_to_check_open_positions = 0
+                pass
 
             if defender == 1:
                 if (current_price <= static_sl_price) or (current_price >= static_tp_price):
@@ -224,9 +220,9 @@ class SL_STRATEGYY():
                             print('str 207: Problem with calc checkpointt and breakpointt')
 
                     if main_stake_var[i]["checkpointt_flag"]:
-                        if my_params.SL_STRATEGY_NUMBER == 2.0:                            
-                            main_stake_var[i] = self.limit_order_pattern(main_stake_var[i])
-                        elif my_params.SL_STRATEGY_NUMBER == 2.1:  
+                        # if my_params.SL_STRATEGY_NUMBER == 2.0:                            
+                        #     main_stake_var[i] = self.limit_order_pattern(main_stake_var[i])
+                        if my_params.SL_STRATEGY_NUMBER == 2.1:  
                             print('Hello checkpointt_flag!')
                             main_stake_var[i]["checkpointt_flag"] = False                
                             self.trailing_sl_levels.pop(0)                             
@@ -236,39 +232,39 @@ class SL_STRATEGYY():
                     print('len(self.TABULA_SL_TP_POINTS) = 0!')
             # print(f"len_main_stake_var  {len(main_stake_var)}")
         
-        return main_stake_var, done_flag, time_to_check_open_positions
+        return main_stake_var, done_flag, step
     
-    def limit_order_pattern(self, itemm, success_flag = False):
-        item = itemm.copy()
-        try:
-            if item["last_sl_order_id"]:                                        
-                cancel_order, success_flag = orders_utilss.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
-                # print(f"str175: {cancel_order}")
-            if success_flag:
-                print('The canceled last order was Successully') 
+    # def limit_order_pattern(self, itemm, success_flag = False):
+    #     item = itemm.copy()
+    #     try:
+    #         if item["last_sl_order_id"]:                                        
+    #             cancel_order, success_flag = orders_utilss.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
+    #             # print(f"str175: {cancel_order}")
+    #         if success_flag:
+    #             print('The canceled last order was Successully') 
                 
-            else:
-                print('The canceled last order was unsuccessully')                            
-        except Exception as ex:
-            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n {cancel_order}") 
-        try:
-            is_closing = -1
-            success_flag = False   
-            target_price = item["breakpointt"]
-            market_type = 'LIMIT'                                 
-            open_dinamic_sl_order, success_flag = create_orders_obj.make_order(item, is_closing, target_price, market_type)
-            # print(f'open_static_sl_order  {open_static_sl_order}')
+    #         else:
+    #             print('The canceled last order was unsuccessully')                            
+    #     except Exception as ex:
+    #         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n {cancel_order}") 
+    #     try:
+    #         is_closing = -1
+    #         success_flag = False   
+    #         target_price = item["breakpointt"]
+    #         market_type = 'LIMIT'                                 
+    #         open_dinamic_sl_order, success_flag = create_orders_obj.make_order(item, is_closing, target_price, market_type)
+    #         # print(f'open_static_sl_order  {open_static_sl_order}')
 
-            if success_flag:
-                item["checkpointt_flag"] = False                
-                self.trailing_sl_levels.pop(0) 
-                item["last_sl_order_id"] = open_dinamic_sl_order["orderId"] 
-                item["checkpointt"], item["breakpointt"] = None, None 
+    #         if success_flag:
+    #             item["checkpointt_flag"] = False                
+    #             self.trailing_sl_levels.pop(0) 
+    #             item["last_sl_order_id"] = open_dinamic_sl_order["orderId"] 
+    #             item["checkpointt"], item["breakpointt"] = None, None 
     
-        except Exception as ex:
-            logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+    #     except Exception as ex:
+    #         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
-        return item
+    #     return item
     
 sl_strategies = SL_STRATEGYY()
 

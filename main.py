@@ -102,7 +102,7 @@ async def main(start_time):
         #     break
         try:
             # await asyncio.sleep(2)
-            if len(total_raport_list) >= 5:
+            if len(total_raport_list) >= 1:
                 print('it is time to assuming!')  
                 # asum_counter(total_raport_list)
                 # create_orders_obj.cancel_all_orderss()
@@ -176,8 +176,8 @@ async def main(start_time):
 
                 main_stake = await price_monitoring(main_stake, process_data)
                 # firstt = True
-                if main_stake: 
-                    main_stake, problem_to_closing_by_market_list, _ = orders_utilss.close_position_confidencer(main_stake)
+                # if main_stake: 
+                #     main_stake, problem_to_closing_by_market_list, _ = orders_utilss.close_position_confidencer(main_stake)
                         
                 intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
                 total_raport_list += intermedeate_raport_list
