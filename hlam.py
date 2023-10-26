@@ -332,3 +332,63 @@
 
         # ['LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', 'TRAILING_STOP_MARKET']
         # print(item)
+
+        # try: 
+        #     close_by_market_symbol_list, dont_close_by_market_symbol_list = [], []   
+        #     close_by_market_symbol_list, dont_close_by_market_symbol_list = self.try_to_close_by_market_open_position_by_item(try_to_close_by_market_list)
+        #     if close_by_market_symbol_list:           
+        #         for i, item in enumerate(main_stake):
+        #             if item["done_level"] == 6:
+        #                 if item["symbol"] in close_by_market_symbol_list:
+        #                     main_stake_var[i]["close_position"] = True           
+            
+        #     symbol_list_to_cancel_orders = [x["symbol"] for x in main_stake_var if x["close_position"]]
+        #     cancel_all_orders_answer = self.cancel_all_orders_for_position(symbol_list_to_cancel_orders)
+        # except Exception as ex:
+        #     print(ex) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # def try_to_close_by_market_all_open_positions(self, main_stake):
+    #     all_positions = None        
+    #     close_pos_by_market = None        
+    #     close_pos_by_market_answer_list = []      
+    #     is_closing = -1
+    #     target_price = None
+    #     type_market = 'MARKET'
+    #     symbol = None
+    #     all_symbols = []
+    #     try:
+    #         all_positions = self.get_open_positions(symbol)  
+    #     except Exception as ex:
+    #         print(ex)
+
+    #     all_symbols = [x["symbol"] for x in all_positions]
+    #     main_stakee = [x for x in main_stake if x["symbol"] in all_symbols]
+
+    #     for item in main_stakee:
+    #         try:
+    #             close_pos_by_market = self.make_order(item, is_closing, type_market, target_price)
+    #             close_pos_by_market_answer_list.append(close_pos_by_market)
+    #         except Exception as ex:
+    #             print(ex)
+    #             close_pos_by_market_answer_list.append(ex)
+    #             continue
+
+    #     return close_pos_by_market_answer_list

@@ -2,6 +2,8 @@ import asyncio
 import math
 from API.bin_data_get import bin_data
 from API.create_order import create_orders_obj
+from API.orders_utils import orders_utilss
+
 from pparamss import my_params
 from ENGIN.main_strategy_controller import strateg_controller   
 from UTILS.waiting_candle import kline_waiter
@@ -66,6 +68,7 @@ async def main(start_time):
     total_raport_list = [] 
     intermedeate_raport_list = [] 
     main_stake_busy_symbols_list = []
+    problem_to_closing_by_market_list = []
     recalculated_depo = None
     atr_corrector_list = []
     # print(my_params.limit_selection_coins)
@@ -95,11 +98,11 @@ async def main(start_time):
         print(f"main__24:\n{ex}")
     
     while True:
-        if firstt:
-            break
+        # if firstt:
+        #     break
         try:
             # await asyncio.sleep(2)
-            if len(total_raport_list) >= 1:
+            if len(total_raport_list) >= 5:
                 print('it is time to assuming!')  
                 # asum_counter(total_raport_list)
                 # create_orders_obj.cancel_all_orderss()
@@ -172,14 +175,14 @@ async def main(start_time):
                 # main_stake = [{'symbol': 'ETHUSDT', 'defender': 1, 'enter_deFacto_price': None, 'recalc_depo': None, 'current_price': None, 'close_position': False, 'qnt': None, 'price_precision': None, 'tick_size': None, 'atr_aprox': 94.46000000000004, 'atr': 75.36071428571431, 'rra': 301.10690804, 'last_sl_order_id': None, 'static_tp_price': None, 'static_sl_price': None, 'checkpointt_flag': False, 'checkpointt': None, 'breakpointt': None, 'done_level': 0,}]
 
                 main_stake = await price_monitoring(main_stake, process_data)
-                firstt = True
+                # firstt = True
                 if main_stake: 
-                    main_stake, _, _ = create_orders_obj.close_position_confidencer(main_stake)
+                    main_stake, problem_to_closing_by_market_list, _ = orders_utilss.close_position_confidencer(main_stake)
                         
                 intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
                 total_raport_list += intermedeate_raport_list
                 main_stake = [x for x in main_stake if not x["close_position"]]
-                main_stake_busy_symbols_list = [x['symbol'] for x in main_stake]
+                main_stake_busy_symbols_list = [x['symbol'] for x in main_stake] + problem_to_closing_by_market_list
 
             except Exception as ex:
                 print(f"main__192:\n{ex}")         

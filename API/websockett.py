@@ -21,8 +21,8 @@ async def price_monitoring(main_stake, data_callback):
             # # first_iter_flag = False  
             ws = None   
             done_flag = False             
-            counter = 0  
-            
+            counter = 0 
+            time_to_check_open_positions = 0           
                           
             try:
                 # print('hi')
@@ -58,7 +58,7 @@ async def price_monitoring(main_stake, data_callback):
 
                                 if counter == len(main_stake_var):
                                     # print(f"counter == len(main_stake_var):  {counter == len(main_stake_var)}")
-                                    main_stake_var, done_flag, step = await data_callback(main_stake_var, step)
+                                    main_stake_var, done_flag, step, time_to_check_open_positions = await data_callback(main_stake_var, step, time_to_check_open_positions)
                                     counter = 0  
                                     # print(f"done_flag  {done_flag}")   
                                     # print(f"len(main_stake_var) after call_back{len(main_stake_var)}")              
@@ -76,7 +76,7 @@ async def price_monitoring(main_stake, data_callback):
         await ws.close()
         return main_stake_var
 
-async def process_data(main_stake, step):
+async def process_data(main_stake, step, time_to_check_open_positions):
 
     done_flag = False
     main_stake_var = main_stake.copy()    
@@ -88,8 +88,9 @@ async def process_data(main_stake, step):
             
     elif step == 4:
         try:
-            main_stake_var, done_flag, step = sl_strategies.trailling_sl_controller(main_stake_var, step)      
+            time_to_check_open_positions += 1
+            main_stake_var, done_flag, time_to_check_open_positions = sl_strategies.trailling_sl_controller(main_stake_var, time_to_check_open_positions)      
         except Exception as ex:
             logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 
-    return main_stake_var, done_flag, step
+    return main_stake_var, done_flag, step, time_to_check_open_positions

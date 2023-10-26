@@ -1,7 +1,9 @@
 from pparamss import my_params
 from API.create_order import create_orders_obj
+from API.orders_utils import orders_utilss
 from API.bin_data_get import bin_data
 from UTILS.calc_qnt import calc_qnt_func, checkpoint_calc
+
 
 import logging
 import os
@@ -126,7 +128,7 @@ class SL_STRATEGYY():
             step = 4
             return main_stake_var, step     
 
-    def trailling_sl_controller(self, main_stake, step):
+    def trailling_sl_controller(self, main_stake, time_to_check_open_positions):
 
         # print(f"len_main_stake  {len(main_stake)}")    
         done_flag = False
@@ -134,23 +136,23 @@ class SL_STRATEGYY():
         
         for i, _ in enumerate(main_stake): 
 
-            symbol = main_stake_var[i]["symbol"] 
+            symbol = main_stake_var[i]["symbol"]         
+            current_price = main_stake_var[i]["current_price"]           
+            price_precision = main_stake_var[i]["price_precision"]            
+            defender = main_stake_var[i]["defender"]
+            enter_deFacto_price = main_stake_var[i]["enter_deFacto_price"]            
+            static_sl_price = main_stake_var[i]["static_sl_price"]            
+            static_tp_price = main_stake_var[i]["static_tp_price"]
+            atr = main_stake_var[i]["atr"]
             # print(f"symbol  {symbol}")    
-            # print(f'main_stake_var[i]["tick_size"] {main_stake_var[i]["tick_size"]}')            
-            current_price = main_stake_var[i]["current_price"] 
-            # print(f"current_price  {current_price}")
-            price_precision = main_stake_var[i]["price_precision"]
+            # print(f'main_stake_var[i]["tick_size"] {main_stake_var[i]["tick_size"]}
+            # # print(f"current_price  {current_price}")')  
             # print(f"price_precision  {price_precision}")
-            defender = main_stake_var[i]["defender"]  
             # print(f"defender  {defender}")
             # print(f'last_sl_order_id {main_stake_var[i]["last_sl_order_id"]}')
-            enter_deFacto_price = main_stake_var[i]["enter_deFacto_price"]
             # print(f"enter_deFacto_price  {enter_deFacto_price}")
-            static_sl_price = main_stake_var[i]["static_sl_price"] 
             # print(f"static_sl_price  {static_sl_price}")
-            static_tp_price = main_stake_var[i]["static_tp_price"]
             # print(f"static_tp_price  {static_tp_price}")
-            atr = main_stake_var[i]["atr"]  
             # print(f"atr  {atr}")
             try: 
                 q_trailing_sl = self.trailing_sl_levels[1][0]
@@ -158,21 +160,29 @@ class SL_STRATEGYY():
                 q_trailing_tp = self.trailing_sl_levels[1][1] 
                 # print(f"q_trailing_tp  {q_trailing_tp}") 
             except:
-                pass     
+                pass  
+
+            if time_to_check_open_positions == 61:
+                open_pos = orders_utilss.get_open_positions()            
+                open_pos_symbol_list = [x["symbol"] for x in open_pos]
+                if symbol not in open_pos_symbol_list:
+                    main_stake_var[i]["done_level"] = 6
+                    done_flag = True 
+                    time_to_check_open_positions = 0
 
             if defender == 1:
                 if (current_price <= static_sl_price) or (current_price >= static_tp_price):
                     main_stake_var[i]["done_level"] = 6
                     done_flag = True 
-                else:
-                    print('not yet')    
+                # else:
+                #     print('not yet')    
 
             elif defender == -1:
                 if (current_price >= static_sl_price) or (current_price <= static_tp_price):
                     main_stake_var[i]["done_level"] = 6
                     done_flag = True
-                else:
-                    print('not yet') 
+                # else:
+                #     print('not yet') 
 
             if my_params.SL_STRATEGY_NUMBER == 2.0 or my_params.SL_STRATEGY_NUMBER == 2.1:        
                 if main_stake_var[i]["breakpointt"]:
@@ -226,13 +236,13 @@ class SL_STRATEGYY():
                     print('len(self.TABULA_SL_TP_POINTS) = 0!')
             # print(f"len_main_stake_var  {len(main_stake_var)}")
         
-        return main_stake_var, done_flag, step
+        return main_stake_var, done_flag, time_to_check_open_positions
     
     def limit_order_pattern(self, itemm, success_flag = False):
         item = itemm.copy()
         try:
             if item["last_sl_order_id"]:                                        
-                cancel_order, success_flag = create_orders_obj.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
+                cancel_order, success_flag = orders_utilss.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
                 # print(f"str175: {cancel_order}")
             if success_flag:
                 print('The canceled last order was Successully') 
