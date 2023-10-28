@@ -1,3 +1,4 @@
+
 class Parameters:
     def __init__(self):
         self.SOLI_DEO_GLORIA = 'Soli Deo Gloria!'
@@ -13,14 +14,20 @@ class Parameters:
         self.BUNCH_VARIANT = 1
         self.SL_STRATEGY_NUMBER = 1  # statik sl/tp
         # self.SL_STRATEGY_NUMBER = 2.0  # trailing sl/tp by limit order
-        # self.SL_STRATEGY_NUMBER = 2.1  # trailing sl/tp by market order
+        self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
         
 class TEMPLATES(Parameters):
    
     def __init__(self) -> None:
         super().__init__()
+        self.TERMINATE_TIMER_FLAG = False
+        self.REST_TIME = {
+            "from": 1,
+            "to": 3
+        }
         self.KLINE_TIME, self.TIME_FRAME = 4, 'h'
         self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
+        self.ATR_PERIOD = 14
         # ///////////////////////////////////////////////////////////////////////////////
         # /////////////////////////////////////////////////////////////////////////////
         fibonacci_levels = [0, 0.236, 0.382, 0.50, 0.618, 1, 1.618, 2.618, 4.236] 
@@ -77,19 +84,11 @@ class TEMPLATES(Parameters):
         self.SLICE_VOLUME_PAIRS = 10
         self.SLICE_CHANGINGPRICES_PAIRS = 10
         self.FILTER_PRICE = 0.1
+        self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT']
         # self.QNT_ROUNDING_TYPE = 'ceil'
         self.QNT_ROUNDING_TYPE = 'round'
         # self.QNT_ROUNDING_TYPE = 'floor'
 
 my_params = TEMPLATES()
 
-# print[my_params.sl_tabula_list]
-# print[my_params.SL_TABULA_LIST[my_params.SL_TABULA_NUMBER][1][0][1]]
-
-
-
-
-# itemm = tabula.pop[0]
-# print(my_params.STATIC_SL)
-# print(my_params.STATIC_TP)
 # python -m pparamss

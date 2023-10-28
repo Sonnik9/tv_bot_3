@@ -392,3 +392,319 @@
     #             continue
 
     #     return close_pos_by_market_answer_list
+
+                # main_stake = [{'symbol': 'ETHUSDT', 'defender': 1, 'enter_deFacto_price': None, 'recalc_depo': None, 'current_price': None, 'close_position': False, 'qnt': None, 'price_precision': None, 'tick_size': None, 'atr_aprox': 94.46000000000004, 'atr': 75.36071428571431, 'rra': 301.10690804, 'last_sl_order_id': None, 'static_tp_price': None, 'static_sl_price': None, 'checkpointt_flag': False, 'checkpointt': None, 'breakpointt': None, 'done_level': 0,}]
+
+                # firstt = True
+                # if main_stake: 
+                #     main_stake, problem_to_closing_by_market_list, _ = orders_utilss.close_position_confidencer(main_stake)
+
+    # print(top_coins)
+    # top_coins = [x.replace('USDT', '') for x in top_coins]
+    # print(top_coins)
+    # finish_time = time.time() - start_time    
+    # print(f"Общее время поиска:  {math.ceil(finish_time)} сек")
+
+    # def limit_order_pattern(self, itemm, success_flag = False):
+    #     item = itemm.copy()
+    #     try:
+    #         if item["last_sl_order_id"]:                                        
+    #             cancel_order, success_flag = orders_utilss.cancel_order_by_id(item["symbol"], item["last_sl_order_id"])
+    #             # print(f"str175: {cancel_order}")
+    #         if success_flag:
+    #             print('The canceled last order was Successully') 
+                
+    #         else:
+    #             print('The canceled last order was unsuccessully')                            
+    #     except Exception as ex:
+    #         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}\n {cancel_order}") 
+    #     try:
+    #         is_closing = -1
+    #         success_flag = False   
+    #         target_price = item["breakpointt"]
+    #         market_type = 'LIMIT'                                 
+    #         open_dinamic_sl_order, success_flag = create_orders_obj.make_order(item, is_closing, target_price, market_type)
+    #         # print(f'open_static_sl_order  {open_static_sl_order}')
+
+    #         if success_flag:
+    #             item["checkpointt_flag"] = False                
+    #             self.trailing_sl_levels.pop(0) 
+    #             item["last_sl_order_id"] = open_dinamic_sl_order["orderId"] 
+    #             item["checkpointt"], item["breakpointt"] = None, None 
+    
+    #     except Exception as ex:
+    #         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
+
+    #     return item
+
+            # print(f"symbol  {symbol}")    
+            # print(f'itemm["tick_size"] {itemm["tick_size"]}
+            # # print(f"current_price  {current_price}")')  
+            # print(f"price_precision  {price_precision}")
+            # print(f"defender  {defender}")
+            # print(f'last_sl_order_id {itemm["last_sl_order_id"]}')
+            # print(f"enter_deFacto_price  {enter_deFacto_price}")
+            # print(f"static_sl_price  {static_sl_price}")
+            # print(f"static_tp_price  {static_tp_price}")
+            # print(f"atr  {atr}")
+
+
+# from API.post_api import CREATE_BINANCE_ORDER
+# from pparamss import my_params
+
+
+# class OTHERS_FOR_ORDERS(CREATE_BINANCE_ORDER):
+
+#     def __init__(self) -> None:
+#         super().__init__()
+
+
+#     def try_to_close_by_market_all_open_positions(self, main_stake):
+#         all_positions = None        
+#         close_pos_by_market = None        
+#         close_pos_by_market_answer_list = []      
+#         is_closing = -1
+#         target_price = None
+#         type_market = 'MARKET'
+#         symbol = None
+#         all_symbols = []
+#         try:
+#             all_positions = self.get_open_positions(symbol)  
+#         except Exception as ex:
+#             print(ex)
+
+#         all_symbols = [x["symbol"] for x in all_positions]
+#         main_stakee = [x for x in main_stake if x["symbol"] in all_symbols]
+
+#         for item in main_stakee:
+#             try:
+#                 close_pos_by_market = self.make_order(item, is_closing, type_market, target_price)
+#                 close_pos_by_market_answer_list.append(close_pos_by_market)
+#             except Exception as ex:
+#                 print(ex)
+#                 close_pos_by_market_answer_list.append(ex)
+#                 continue
+
+#         return close_pos_by_market_answer_list
+    
+#     def cancel_all_open_orders(self):
+#         cancel_orders = None
+#         all_orders = None
+
+#         all_orders = self.get_all_orders()
+
+#         for item in all_orders:
+#             params = {}
+#             params["symbol"] = item["symbol"]
+#             params = self.get_signature(params)
+#             url = my_params.URL_PATTERN_DICT['cancel_all_orders_url']
+#             method = 'DELETE'
+#             cancel_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
+#             print(cancel_orders)
+
+#         return 
+
+
+#     def close_position_confidencer(self, main_stake):
+
+#         main_stake_var = main_stake.copy()
+#         open_pos = None
+#         cancel_all_orders_answer = None
+#         open_pos_symbol_list = []
+#         try_to_closing_by_market_list = []        
+#         problem_to_closing_by_market_list = []
+
+# # ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+#         cancel_all_orders_for_position_candidate_symbol_list = [x["symbol"] for x in main_stake_var if x["done_level"] == 6]
+#         cancel_all_orders_answer = self.cancel_all_orders_for_position(cancel_all_orders_for_position_candidate_symbol_list)
+#         print(cancel_all_orders_answer)
+# # //////////////////////////////////////////////////////////////////////////////////////////////////
+
+#         open_pos = self.get_open_positions()   
+#         open_pos_symbol_list = [x["symbol"] for x in open_pos]
+
+#         for i, item in enumerate(main_stake):
+#             if item["done_level"] == 6:
+#                 if item["symbol"] in open_pos_symbol_list:
+#                     try_to_closing_by_market_list.append(item)
+#                 else:
+#                     main_stake_var[i]["close_position"] = True
+
+#         try: 
+#             close_by_market_symbol_list_successfuly, problem_to_closing_by_market_list = [], []   
+#             close_by_market_symbol_list_successfuly, problem_to_closing_by_market_list = self.try_to_close_by_market_open_position_by_stake(try_to_closing_by_market_list)
+#             if close_by_market_symbol_list_successfuly:           
+#                 for i, item in enumerate(main_stake):
+#                     if item["done_level"] == 6:
+#                         if item["symbol"] in close_by_market_symbol_list_successfuly:
+#                             main_stake_var[i]["close_position"] = True           
+            
+#         except Exception as ex:
+#             print(ex)
+
+#         return main_stake_var, problem_to_closing_by_market_list, None
+
+
+
+# make_order = None 
+# item = {}
+# symbol = 'BTCUSDT'
+# item["symbol"] = 'BTCUSDT'
+# item["qnt"] = 0.001
+# item["atr"] = 475
+# is_closing = 1
+# type_market = 'MARKET'
+# item["defender"] = 1
+# target_price = None
+# open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+
+# symbol = 'BTCUSDT'
+# item["symbol"] = 'BTCUSDT'
+# item["qnt"] = 0.001
+# item["atr"] = 475
+# is_closing = -1
+# type_market = 'STOP_MARKET'
+# item["defender"] = 1
+# target_price = 30000
+# open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+
+# symbol = 'BTCUSDT'
+# item["symbol"] = 'BTCUSDT'
+# item["qnt"] = 0.001
+# item["atr"] = 475
+# is_closing = -1
+# type_market = 'TAKE_PROFIT_MARKET'
+# item["defender"] = 1
+# target_price = 40000
+# open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+
+# print(open_market_order)
+
+# symbol = 'ETHUSDT'
+# item["symbol"] = 'ETHUSDT'
+# item["qnt"] = 0.003
+# item["atr"] = 475
+# is_closing = 1
+# type_market = 'LIMIT'
+# item["defender"] = 1
+# target_price = 1800
+# open_market_order = create_orders_obj.make_order(item, is_closing, target_price, type_market)
+
+# print(open_market_order)
+
+# symbol_list_to_cancel_orders = ['BTCUSDT']
+# cancel_all_orders_answer = create_orders_obj.cancel_all_orders_for_position(symbol_list_to_cancel_orders)
+
+
+# python -m API.create_order
+
+        
+        # if market_type == 'MARKET' or market_type == 'LIMIT' or market_type == 'TAKE_PROFIT_MARKET':
+   
+
+
+# open_pos = orders_utilss.get_open_positions()  
+# # print(pos)
+# open_pos_symbol_list = [x["symbol"] for x in open_pos]
+# if symbol not in open_pos_symbol_list:
+#     pass
+# print(open_pos_symbol_list)
+
+# ans = orders_utilss.cancel_all_orders_for_position(['BTCUSDT'])
+# print(ans)
+# item = {}
+# # symbol = 'ETHUSDT' 
+# symbol = open_pos_symbol_list
+# item["symbol"] = symbol
+# item["qnt"] = 0.006
+# # item["atr"] = 475
+# # is_closing = -1
+# # type_market = 'STOP_MARKET'
+# item["defender"] = -1
+# # target_price = 30000
+
+# close_pos = orders_utilss.try_to_close_by_market_open_position_by_stake([item])
+# print(close_pos)
+
+# def terminate_all_func(main_stake):
+
+#     main_stake_var = main_stake.copy()
+#     open_pos = None
+#     cancel_all_orders_answer = None
+#     open_pos_symbol_list = []
+#     try_to_closing_by_market_list = []        
+#     problem_to_closing_by_market_list = []
+
+# # ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+#     cancel_all_orders_for_position_candidate_symbol_list = [x["symbol"] for x in main_stake_var]
+#     cancel_all_orders_answer = delete_apii.cancel_all_orders_for_position(cancel_all_orders_for_position_candidate_symbol_list)
+#     print(cancel_all_orders_answer)
+# # //////////////////////////////////////////////////////////////////////////////////////////////////
+
+#     open_pos = get_apii.get_open_positions()   
+#     open_pos_symbol_list = [x["symbol"] for x in open_pos]
+
+#     for i, item in enumerate(main_stake):
+#         if item["done_level"] == 6:
+#             if item["symbol"] in open_pos_symbol_list:
+#                 try_to_closing_by_market_list.append(item)
+#             else:
+#                 main_stake_var[i]["close_position"] = True
+
+#     try: 
+#         close_by_market_symbol_list_successfuly, problem_to_closing_by_market_list = [], []   
+#         close_by_market_symbol_list_successfuly, problem_to_closing_by_market_list = utils_apii.try_to_close_by_market_open_position_by_stake(try_to_closing_by_market_list)
+#         if close_by_market_symbol_list_successfuly:           
+#             for i, item in enumerate(main_stake):
+#                 if item["done_level"] == 6:
+#                     if item["symbol"] in close_by_market_symbol_list_successfuly:
+#                         main_stake_var[i]["close_position"] = True           
+        
+#     except Exception as ex:
+#         print(ex)
+
+#     return main_stake_var, problem_to_closing_by_market_list, None
+
+   
+
+
+# klines = None 
+# klines = bin_data.get_klines()
+# print(klines)
+
+
+
+# symbol = 'BTCUSDT'
+# s = bin_data.get_position_price(symbol)
+# print(s)
+
+# all_tickers = None 
+# # all_tickers = bin_data.get_excangeInfo()
+# all_tickers = bin_data.get_balance()
+# print(all_tickers)
+
+
+# if "symbols" in all_tickers:
+#     symbols = all_tickers["symbols"]
+#     for symbol_data in symbols:
+#         # Вы можете здесь обрабатывать информацию о символе
+#         print("Информация о символе:", symbol_data)
+# else:
+#     print("Данные о символах ('symbols') отсутствуют в ответе.")
+
+
+# print(all_tickers)
+
+
+
+# symbol = 'LTCUSDT'
+# price = 33500
+# depo = 66
+# quantity, recalc_depo, price_precision, tick_size = calc_qnt_func(symbol, price, depo)
+
+# print(quantity, recalc_depo, price_precision, tick_size) 
+
+# {'symbol': 'BTCUSDT', 'pair': 'BTCUSDT', 'contractType': 'PERPETUAL', 'deliveryDate': 4133404802000, 'onboardDate': 1569398400000, 'status': 'TRADING', 'maintMarginPercent': '2.5000', 'requiredMarginPercent': '5.0000', 'baseAsset': 'BTC', 'quoteAsset': 'USDT', 'marginAsset': 'USDT', 'pricePrecision': 2, 'quantityPrecision': 3, 'baseAssetPrecision': 8, 'quotePrecision': 8, 'underlyingType': 'COIN', 'underlyingSubType': [], 'settlePlan': 0, 'triggerProtect': '0.0500', 'liquidationFee': '0.020000', 'marketTakeBound': '0.30', 'maxMoveOrderLimit': 1000, 'filters': [{'maxPrice': '809484', 'minPrice': '261.10', 'tickSize': '0.10', 'filterType': 'PRICE_FILTER'}, {'minQty': '0.001', 'stepSize': '0.001', 'filterType': 'LOT_SIZE', 'maxQty': '1000'}, {'minQty': '0.001', 'maxQty': '1000', 'filterType': 'MARKET_LOT_SIZE', 'stepSize': '0.001'}, {'limit': 200, 'filterType': 'MAX_NUM_ORDERS'}, {'limit': 10, 'filterType': 'MAX_NUM_ALGO_ORDERS'}, {'filterType': 'MIN_NOTIONAL', 'notional': '5'}, {'multiplierDown': '0.5000', 'filterType': 'PERCENT_PRICE', 'multiplierUp': '1.5000', 'multipliermultipliter': '4'}], 'orderTypes': ['LIMIT', 'MARKET', 'STOP', 'STOP_MARKET', 'TAKE_PROFIT', 'TAKE_PROFIT_MARKET', 'TRAILING_STOP_MARKET'], 'timeInForce': ['GTC', 'IOC', 'FOK', 'GTX', 'GTD']}
+

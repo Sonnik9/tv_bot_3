@@ -1,5 +1,3 @@
-from tradingview_ta import *
-# from pparamss import my_params
 
 def sigmals_handler_one(all_coins_indicators):
 

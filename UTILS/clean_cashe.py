@@ -1,5 +1,4 @@
-import os
-import shutil
+from UTILS.import_u import *
 
 def cleanup_cache():
     project_root = os.getcwd()  # Получаем корневую папку проекта
@@ -10,8 +9,7 @@ def cleanup_cache():
         pycache_path = os.path.join(folder_path, "__pycache__")
 
         if os.path.exists(pycache_path):
-            shutil.rmtree(pycache_path)
-            # print(f"Удален кеш из {pycache_path}")
+            shutil.rmtree(pycache_path)            
 
 # cleanup_cache()
 # python -m UTILS.clean_cashe

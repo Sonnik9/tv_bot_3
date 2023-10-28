@@ -1,6 +1,4 @@
-from pparamss import my_params
-from ENGIN.ind_strategy_1 import sigmals_handler_one
-from ENGIN.ind_strategy_2 import sigmals_handler_two
+from ENGIN.import_e import my_params, sigmals_handler_one, sigmals_handler_two
 from tradingview_ta import *
 
 class STRATEGY_CONTROLLER():

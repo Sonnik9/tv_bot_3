@@ -1,24 +1,8 @@
-import os
-from dotenv import load_dotenv
-from pparamss import my_params
-import hmac 
-import hashlib 
-import requests
-# from requests.exceptions import HTTPError
-import time
-
-import logging
-import os
-import inspect
-
-logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
-current_file = os.path.basename(__file__)
+from API.import_a import *
 
 load_dotenv()
 
 class Configg():
-
-    header = None
 
     def __init__(self) -> None:
         if not my_params.TEST_FLAG:
@@ -47,7 +31,7 @@ class Configg():
     def HTTP_request(self, url, **kwards):
 
         response = None
-        decimal = 2
+        multipliter = 2
 
         for i in range(2):
             try:
@@ -55,11 +39,11 @@ class Configg():
                 if response.status_code == 200:
                     break
                 else:
-                    time.sleep((i+1)* decimal)              
+                    time.sleep((i+1) * multipliter)              
    
             except Exception as ex:
                 logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
-                time.sleep((i+1)* decimal)                
+                time.sleep((i+1) * multipliter)                
                 
         try:
             response = response.json()

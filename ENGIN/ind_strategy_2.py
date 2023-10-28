@@ -1,4 +1,4 @@
-from pparamss import my_params
+from ENGIN.import_e import my_params
 
 def bunch_handler_func(close_price, upper, lower, macd, signal, rsi, fastk, slowk, current_bunch):
     b_bband_q, s_bband_q, b_rsi_lev, s_rsi_lev, b_macd__q, s_macd_q, b_stoch_q, s_stoch_q = 1, 1, 45, 55, 1, 1, 23, 77
@@ -83,7 +83,8 @@ def sigmals_handler_two(all_coins_indicators):
             rsi = item.indicators["RSI"]
             fastk, slowk = item.indicators["Stoch.K"], item.indicators["Stoch.D"]
             atr = (sum([abs(high - low), abs(high - close_price), abs(low - close_price)]) / 3) * 3
-            indicator = item.symbol            
+            indicator = item.symbol  
+            rra = abs(item.indicators['BB.upper'] - item.indicators['BB.lower'])          
         except Exception as ex:
             pass
 
@@ -114,9 +115,9 @@ def sigmals_handler_two(all_coins_indicators):
         buy_signal, sell_signal = bunch_handler_func(close_price, upper, lower, macd, signal, rsi, fastk, slowk, current_bunch)
 
         if buy_signal:
-            orders_stek.append((indicator, 1, atr))
+            orders_stek.append((indicator, 1, atr, rra))
         # elif sell_signal and my_params.MARKET == 'futures':
         elif sell_signal:        
-            orders_stek.append((indicator, -1, atr))
+            orders_stek.append((indicator, -1, atr, rra))
 
     return orders_stek
