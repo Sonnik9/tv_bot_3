@@ -1,54 +1,80 @@
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 48: 'NoneType' object has no attribute 'items'
-ERROR:root:An error occurred in file 'main.py', line 48: 'NoneType' object has no attribute 'items'
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'current_file' is not defined
-ERROR:root:An error occurred in file 'config.py', line 49: name 'requests' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'time' is not defined
-ERROR:root:An error occurred in file 'config.py', line 49: name 'requests' is not defined
-ERROR:root:An error occurred in file 'main.py', line 20: name 'time' is not defined
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: sl_manager_func() missing 2 required positional arguments: 'done_flag' and 'finish_flag'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: '<=' not supported between instances of 'float' and 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: '<=' not supported between instances of 'float' and 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: '<=' not supported between instances of 'float' and 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: '<=' not supported between instances of 'float' and 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 66: cannot access local variable 'problem_to_closing_by_market_list' where it is not associated with a value
-ERROR:root:An error occurred in file 'websockett.py', line 51: float() argument must be a string or a real number, not 'NoneType'
 ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
 ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
-ERROR:root:An error occurred in file 'websockett.py', line 52: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websockett.py', line 54: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'websockett.py', line 54: float() argument must be a string or a real number, not 'NoneType'
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'sl_strategy_2.py', line 82: cannot access local variable 'q_trailing_sl' where it is not associated with a value
+ERROR:root:An error occurred in file 'websockett.py', line 54: float() argument must be a string or a real number, not 'NoneType'

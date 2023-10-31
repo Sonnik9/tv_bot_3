@@ -42,12 +42,14 @@ async def price_monitoring(main_stake, data_callback):
                                     symbol = data.get('data',{}).get('s')                                    
                                     close_price = float(data.get('data',{}).get('k',{}).get('c'))  
                                     # print(close_price) 
-                                    
-                                    for i, item in enumerate(main_stake_var):
-                                        if symbol == item["symbol"]:
-                                            main_stake_arg[i]["current_price"] = close_price
-                                            counter += 1   
-                                            # print(f"socket counter {counter}")                       
+                                    try:
+                                        for i, item in enumerate(main_stake_var):
+                                            if symbol == item["symbol"]:
+                                                main_stake_arg[i]["current_price"] = close_price
+                                                counter += 1   
+                                                # print(f"socket counter {counter}")      
+                                    except Exception as ex:
+                                        print(f"websocket 52: {ex}")                 
                                 except Exception as ex:
                                     logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")                                  
                                     await asyncio.sleep(1)
@@ -58,6 +60,7 @@ async def price_monitoring(main_stake, data_callback):
                                     main_stake_var, problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag = await data_callback(main_stake_arg, step, time_to_check_open_positions, done_flag, finish_flag)
                                     main_stake_arg = main_stake_var
                                     counter = 0  
+                                    print(problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag)
                                     # print(f"done_flag  {done_flag}")   
                                     # print(f"len(main_stake_var) after call_back{len(main_stake_var)}")              
 
