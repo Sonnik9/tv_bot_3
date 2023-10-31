@@ -1,4 +1,6 @@
-from ENGIN.import_e import my_params, checkpoint_calc, logging, os, inspect
+from pparamss import my_params
+from UTILS.calc_qnt import checkpoint_calc
+import logging, os, inspect
 
 logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
 current_file = os.path.basename(__file__)
@@ -9,6 +11,13 @@ class SL_TRAILING_STRATEGYY():
         self.trailing_sl_levels = my_params.TABULA_SL_TP_POINTS
         self.statik_sl = my_params.STATIC_SL_Q
         self.statik_tp = my_params.STATIC_TP_Q
+
+    def trailling_sl_cycl(self, main_stake, step):
+        main_stake_var = main_stake.copy()
+        done_flag = False
+        for i, item in enumerate(main_stake):
+            main_stake_var[i], done_flag, step = self.tailling_sl(item, step)
+        return main_stake_var, done_flag, step         
 
     def tailling_sl(self, item, step):
 
@@ -28,12 +37,12 @@ class SL_TRAILING_STRATEGYY():
 
         if defender == 1:
             if (current_price <= static_sl_price) or (current_price >= static_tp_price):
-                itemm["done_level"] = 6
+                itemm["done_level"] = 3
                 done_flag = True 
 
         elif defender == -1:
             if (current_price >= static_sl_price) or (current_price <= static_tp_price):
-                itemm["done_level"] = 6
+                itemm["done_level"] = 3
                 done_flag = True
 
         if my_params.SL_STRATEGY_NUMBER == 2.1:        
@@ -41,11 +50,11 @@ class SL_TRAILING_STRATEGYY():
                 if itemm["checkpointt_flag"]:
                     if defender == 1:
                         if current_price <= itemm["breakpointt"]:
-                            itemm["done_level"] = 6
+                            itemm["done_level"] = 3
                             done_flag = True
                     elif defender == -1:
                         if current_price >= itemm["breakpointt"]:
-                            itemm["done_level"] = 6
+                            itemm["done_level"] = 3
                             done_flag = True          
 
             if len(self.trailing_sl_levels) != 0:                    

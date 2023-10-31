@@ -1,4 +1,12 @@
-from UTILS.import_u import *
+import math 
+from pparamss import my_params 
+from API.get_api import get_apii
+import logging, os, inspect
+
+logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
+
+
 
 def count_multipliter_places(number):
     if isinstance(number, (int, float)):

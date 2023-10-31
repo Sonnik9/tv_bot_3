@@ -1,4 +1,18 @@
-from imports__ import my_params, utils_apii, logging, inspect, os, kline_waiter, time_keeper_func, strateg_controller, asyncio, stake_generator_func, calc_atr_edition_func, price_monitoring, sl_manager_func  
+from pparamss import my_params
+from API.utils_api import utils_apii
+from ENGIN.main_strategy_controller import strateg_controller  
+from ENGIN.sl_strategy_controller import sl_manager_func
+from UTILS.waiting_candle import kline_waiter
+from UTILS.calc_atr import calc_atr_edition_func
+from UTILS.time_keeper import time_keeper_func
+from UTILS.stake_generator import stake_generator_func
+from MONEY.asumm import asum_counter
+from PROCESS.websockett import price_monitoring
+import asyncio
+import logging
+import os
+import inspect
+import sys 
 
 logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
 current_file = os.path.basename(__file__)
@@ -20,6 +34,7 @@ async def main(start_time):
         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
    
     print(f"len_candidates_pairs: {len(top_coins)}")
+    # print(f"len_candidates_pairs: {top_coins}")
     # sys.exit() 
     try:
         wait_time = kline_waiter(my_params.KLINE_TIME, my_params.TIME_FRAME)
@@ -79,7 +94,7 @@ async def main(start_time):
                           
             # ///////////////////////////////////////////////////////////////////////
             try:
-                main_stake, finish_flag = await price_monitoring(main_stake, sl_manager_func)                        
+                main_stake, problem_to_closing_by_market_list, finish_flag = await price_monitoring(main_stake, sl_manager_func)                        
                 intermedeate_raport_list = [x for x in main_stake if x["close_position"]] 
                 total_raport_list += intermedeate_raport_list
                 main_stake = [x for x in main_stake if not x["close_position"]]

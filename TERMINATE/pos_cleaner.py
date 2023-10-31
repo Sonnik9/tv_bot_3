@@ -1,4 +1,4 @@
-from imports__ import get_apii
+from API.get_api import get_apii
 from API.delete_api import delete_apii
 
 def pos_cleaner_func(main_stake):
@@ -17,7 +17,7 @@ def pos_cleaner_func(main_stake):
         if cur_symbol not in open_pos_symbol_list:
             try_to_cancel_all_orders_by_symbol.append(cur_symbol)
             # print('dhkbghkerbg')
-            main_stake_var[i]["done_level"] = 6
+            main_stake_var[i]["done_level"] = 4
             main_stake_var[i]["close_position"] = True
             done_flag = True 
     cancel_all_orders_answer = None

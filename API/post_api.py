@@ -1,4 +1,5 @@
-from API.import_a import *
+from pparamss import my_params
+from API.config import Configg
 
 class POSTT_API(Configg):
 

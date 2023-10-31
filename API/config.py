@@ -1,4 +1,12 @@
-from API.import_a import *
+from pparamss import my_params
+import logging, os, inspect
+from dotenv import load_dotenv
+import time
+import hmac
+import hashlib
+import requests
+logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
 
 load_dotenv()
 
@@ -35,7 +43,9 @@ class Configg():
 
         for i in range(2):
             try:
+                # print('hi')
                 response = requests.request(url=url, **kwards)
+                # print(response)
                 if response.status_code == 200:
                     break
                 else:

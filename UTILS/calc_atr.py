@@ -1,4 +1,5 @@
-from UTILS.import_u import *
+from pparamss import my_params 
+from API.get_api import get_apii
 
 def calculate_atr(data, period=my_params.ATR_PERIOD):
 

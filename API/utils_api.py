@@ -1,4 +1,6 @@
-from API.import_a import *
+from pparamss import my_params
+from API.get_api import get_apii
+from API.post_api import post_apii
 
 class UTILS_FOR_ORDERS():
 
@@ -11,65 +13,71 @@ class UTILS_FOR_ORDERS():
         is_closing = -1
         target_price = None
         market_type = 'MARKET'
-        good_news = []
-        bad_news = []
+        succes_closed_symbol_list = []
+        dont_closed_symbol_list = []
 
         for item in main_stake:
+            success_flag = False
             try:
-                close_pos_by_market, _ = post_apii.make_order(item, is_closing, target_price, market_type)
+                _, success_flag = post_apii.make_order(item, is_closing, target_price, market_type)
                 
-                if close_pos_by_market and 'status' in close_pos_by_market and close_pos_by_market['status'] == 'NEW':
-                    good_news.append(item["symbol"])
+                if success_flag:
+                    succes_closed_symbol_list.append(item["symbol"])
                 else:
-                    bad_news.append(item["symbol"])
+                    dont_closed_symbol_list.append(item["symbol"])
                     
             except Exception as ex:
-                print(ex)
-                bad_news.append(item["symbol"])
+                # print(ex)
+                dont_closed_symbol_list.append(item["symbol"])
                 continue
 
-        return good_news, bad_news
+        return succes_closed_symbol_list, dont_closed_symbol_list
     
     def try_to_close_by_market_all_open_positions(self, main_stake):
 
-        all_positions = None        
+        all_positions = None   
+        succes_closed_symbol_list = []     
         dont_closed_symbol_list = []    
         is_closing = -1
         target_price = None
         type_market = 'MARKET'
-        all_symbols = []
+        all_openPos_symbols = []
 
         try:
             all_positions = get_apii.get_open_positions()  
         except Exception as ex:
             print(ex)
 
-        all_symbols = [x["symbol"] for x in all_positions]
-        main_stakee = [x for x in main_stake if x["symbol"] in all_symbols]
+        all_openPos_symbols = [x["symbol"] for x in all_positions]       
 
-        for item in main_stakee:
+        for item in main_stake:
             success_flag = False 
-            try:
-                _, success_flag = post_apii.make_order(item, is_closing, type_market, target_price)
-                if not success_flag:
+            if item["symbol"] in all_openPos_symbols:
+                try:
+                    _, success_flag = post_apii.make_order(item, is_closing, type_market, target_price)
+                    if success_flag:
+                        succes_closed_symbol_list.append(item["symbol"])
+                    else:
+                        dont_closed_symbol_list.append(item["symbol"])                
+                except Exception as ex:
+                    # print(ex)
                     dont_closed_symbol_list.append(item["symbol"])
-                # close_pos_by_market_answer_list.append(close_pos_by_market)
-            except Exception as ex:
-                print(ex)
-                # close_pos_by_market_answer_list.append(ex)
-                continue
+                    # close_pos_by_market_answer_list.append(ex)
+                    continue
 
-        return dont_closed_symbol_list
+        return succes_closed_symbol_list, dont_closed_symbol_list
 
 # ///////////////////////////////////////////////////////////////////////////////////////
         
     def assets_filters(self):
+        # print('bkhsdv')
         all_tickers = []
         top_pairs = []
         sorted_by_volume_data = []
         sorted_by_changing_price_data = []
 
         all_tickers = get_apii.get_all_tickers()
+        # print(all_tickers)
 
         if all_tickers:            
             # print(len(all_tickers))

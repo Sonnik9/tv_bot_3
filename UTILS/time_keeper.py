@@ -1,4 +1,4 @@
-from UTILS.import_u import *
+from pparamss import my_params
 import pytz
 from datetime import datetime, time
 

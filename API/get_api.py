@@ -1,4 +1,6 @@
-from API.import_a import *
+from pparamss import my_params
+from API.config import Configg
+import pandas as pd
 
 class GETT_API(Configg):
 
@@ -10,6 +12,7 @@ class GETT_API(Configg):
 
         all_tickers = None
         url = my_params.URL_PATTERN_DICT['all_tikers_url']       
+        # print(url)
         all_tickers = self.HTTP_request(url, method=self.method, headers=self.header)
 
         return all_tickers

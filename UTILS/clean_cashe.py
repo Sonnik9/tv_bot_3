@@ -1,4 +1,4 @@
-from UTILS.import_u import *
+import os, shutil
 
 def cleanup_cache():
     project_root = os.getcwd()  # Получаем корневую папку проекта

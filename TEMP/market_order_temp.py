@@ -1,4 +1,11 @@
-from TEMP.imports_t import *
+import logging, os, inspect
+from pparamss import my_params
+from API.get_api import get_apii
+from API.post_api import post_apii
+from UTILS.calc_qnt import calc_qnt_func
+
+logging.basicConfig(filename='API/config_log.log', level=logging.ERROR)
+current_file = os.path.basename(__file__)
 
 def make_market_order_temp_func(item):
 
@@ -11,7 +18,7 @@ def make_market_order_temp_func(item):
     if lev and 'leverage' in lev and lev['leverage'] == my_params.LEVERAGE:
         enter_deJure_price = itemm["current_price"]
         try:                    
-            itemm['qnt'], itemm["recalc_depo"],itemm["price_precision"], itemm["tick_size"] = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO)            
+            itemm['qnt'], itemm["recalc_depo"], itemm["price_precision"], itemm["tick_size"] = calc_qnt_func(symbol, enter_deJure_price, my_params.DEPO)            
         except Exception as ex:
             logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")
 

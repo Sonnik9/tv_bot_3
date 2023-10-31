@@ -8,13 +8,13 @@ class Parameters:
         # self.test_flag = False # -- real
         self.TEST_FLAG = True # -- test
         self.DEPO = 25
-        self.LEVERAGE = 2
+        self.LEVERAGE = 1
         # self.SLIPPAGE_COEFFICIENT = 0.005  # Коэффициент погрешности 0.5%         
         self.MAIN_STRATEGY_NUMBER = 1
         self.BUNCH_VARIANT = 1
         self.SL_STRATEGY_NUMBER = 1  # statik sl/tp
         # self.SL_STRATEGY_NUMBER = 2.0  # trailing sl/tp by limit order
-        self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
+        # self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
         
 class TEMPLATES(Parameters):
    
