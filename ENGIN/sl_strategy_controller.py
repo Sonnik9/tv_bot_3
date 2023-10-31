@@ -14,7 +14,7 @@ async def sl_manager_func(main_stake, step, time_to_check_open_positions, done_f
     problem_to_closing_by_market_list = []
     # print(f"len(main_stake_var)  {len(main_stake_var)}")
     if step == 0: 
-        print(step)
+        # print(step)
         for i, _ in enumerate(main_stake):            
             if not main_stake_var[i]["in_position"]:
                 main_stake_var[i] = make_market_order_temp_func(main_stake_var[i])  
@@ -26,17 +26,17 @@ async def sl_manager_func(main_stake, step, time_to_check_open_positions, done_f
         return main_stake_var, problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag
 
     if step == 1:
-        print(step)
+        # print(step)
         if my_params.SL_STRATEGY_NUMBER == 1:
             time_to_check_open_positions += 1
             if time_to_check_open_positions == 31:
-                print("time for terminate")
-                problem_closing_list = []
-                succes_closed_symbol_list, problem_to_closing_by_market_list = terminate_all_func(main_stake_var)
-                finish_flag = True
-                print(f"problem_to_closing_by_market_list  {problem_to_closing_by_market_list}")
-                # print('time_to_check_open_positions_flag = True')
-                # main_stake_var, done_flag = pos_cleaner_func(main_stake_var)
+                # print("time for terminate")
+                # problem_closing_list = []
+                # succes_closed_symbol_list, problem_to_closing_by_market_list = terminate_all_func(main_stake_var)
+                # finish_flag = True
+                # print(f"problem_to_closing_by_market_list  {problem_to_closing_by_market_list}")
+                print('time_to_check_open_positions_flag = True')
+                main_stake_var, done_flag = pos_cleaner_func(main_stake_var)
                 time_to_check_open_positions = 0
         elif my_params.SL_STRATEGY_NUMBER == 2:
             ready_to_close_list = []            

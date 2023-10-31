@@ -48,7 +48,7 @@ async def main(start_time):
             break
         try:
             # await asyncio.sleep(2)
-            if len(total_raport_list) >= 1:
+            if len(total_raport_list) >= 3:
                 print('it is time to assuming!')                
                 break
             if my_params.TERMINATE_TIMER_FLAG:

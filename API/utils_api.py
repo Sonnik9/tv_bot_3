@@ -40,7 +40,7 @@ class UTILS_FOR_ORDERS():
         dont_closed_symbol_list = []    
         is_closing = -1
         target_price = None
-        type_market = 'MARKET'
+        market_type = 'MARKET'
         all_openPos_symbols = []
 
         try:
@@ -48,13 +48,15 @@ class UTILS_FOR_ORDERS():
         except Exception as ex:
             print(ex)
 
-        all_openPos_symbols = [x["symbol"] for x in all_positions]       
+        all_openPos_symbols = [x["symbol"] for x in all_positions]  
+        # print(all_openPos_symbols)     
 
         for item in main_stake:
             success_flag = False 
+            # print(item)
             if item["symbol"] in all_openPos_symbols:
                 try:
-                    _, success_flag = post_apii.make_order(item, is_closing, type_market, target_price)
+                    _, success_flag = post_apii.make_order(item, is_closing, target_price, market_type)
                     if success_flag:
                         succes_closed_symbol_list.append(item["symbol"])
                     else:

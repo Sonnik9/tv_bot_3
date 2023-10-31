@@ -12,9 +12,9 @@ class Parameters:
         # self.SLIPPAGE_COEFFICIENT = 0.005  # Коэффициент погрешности 0.5%         
         self.MAIN_STRATEGY_NUMBER = 1
         self.BUNCH_VARIANT = 1
-        self.SL_STRATEGY_NUMBER = 1  # statik sl/tp
+        # self.SL_STRATEGY_NUMBER = 1  # statik sl/tp
         # self.SL_STRATEGY_NUMBER = 2.0  # trailing sl/tp by limit order
-        # self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
+        self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
         
 class TEMPLATES(Parameters):
    
@@ -36,7 +36,7 @@ class TEMPLATES(Parameters):
             self.SOLI_DEO_GLORIA,            
             [[fibonacci_levels[6], fibonacci_levels[5]], [[fibonacci_levels[1] * 0.5,fibonacci_levels[1]], [fibonacci_levels[2] * 0.5, fibonacci_levels[2]], [fibonacci_levels[3] * 0.5, fibonacci_levels[3]], [fibonacci_levels[4] * 0.5, fibonacci_levels[4]]]],
             [[0.9, 1.2], [[0.2, 0.4], [0.3, 0.6], [0.45, 0.9], [0.55, 1.11]]],
-            [[2.1, 0.09], [[0.5, 0.7], [0.81, 0.9]]]
+            [[2.1, 0.12], [[0.5, 0.7], [0.81, 0.9]]]
         ]
         self.TABULA_STATIC_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][0]        
         self.TABULA_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][1] 
@@ -84,7 +84,7 @@ class TEMPLATES(Parameters):
         self.SLICE_VOLUME_PAIRS = 10
         self.SLICE_CHANGINGPRICES_PAIRS = 10
         self.FILTER_PRICE = 0.1
-        self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT']
+        self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT']
         # self.QNT_ROUNDING_TYPE = 'ceil'
         self.QNT_ROUNDING_TYPE = 'round'
         # self.QNT_ROUNDING_TYPE = 'floor'

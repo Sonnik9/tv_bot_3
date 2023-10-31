@@ -4,8 +4,7 @@ from API.delete_api import delete_apii
 def pos_cleaner_func(main_stake):
 
     done_flag = False
-    main_stake_var = main_stake.copy()
-    print('time_to_check_open_positions_flag = True')
+    main_stake_var = main_stake.copy()   
     # time_to_check_open_positions_flag = True
     open_pos = get_apii.get_open_positions()            
     open_pos_symbol_list = [x["symbol"] for x in open_pos]
