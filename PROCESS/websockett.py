@@ -57,15 +57,18 @@ async def price_monitoring(main_stake, data_callback):
 
                                 if counter == len(main_stake_var):
                                     # print(f"counter == len(main_stake_var):  {counter == len(main_stake_var)}")
-                                    main_stake_var, problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag = await data_callback(main_stake_arg, step, time_to_check_open_positions, done_flag, finish_flag)
-                                    main_stake_arg = main_stake_var
-                                    counter = 0  
-                                    print(problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag)
-                                    # print(f"done_flag  {done_flag}")   
-                                    # print(f"len(main_stake_var) after call_back{len(main_stake_var)}")              
+                                    try:
+                                        main_stake_var, problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag = await data_callback(main_stake_arg, step, time_to_check_open_positions, done_flag, finish_flag)
+                                        main_stake_arg = main_stake_var
+                                        counter = 0  
+                                        # print(problem_to_closing_by_market_list, step, time_to_check_open_positions, done_flag, finish_flag)
+                                        # print(f"done_flag  {done_flag}")   
+                                        # print(f"len(main_stake_var) after call_back{len(main_stake_var)}")              
 
-                                    if done_flag or finish_flag or len(main_stake_var) == 0:                               
-                                        return 
+                                        if done_flag or finish_flag or len(main_stake_var) == 0:                               
+                                            return 
+                                    except Exception as ex:
+                                        print(ex)
 
             except Exception as ex:
                 logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}")

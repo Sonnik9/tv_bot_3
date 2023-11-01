@@ -59,7 +59,7 @@ async def sl_manager_func(main_stake, step, time_to_check_open_positions, done_f
 
         elif my_params.SL_STRATEGY_NUMBER == 2:
             ready_to_close_list = []            
-            main_stake_var, done_flag = sl_trailing_strategy.trailling_sl_cycl(main_stake_var)
+            main_stake_var, done_flag, step = sl_trailing_strategy.trailling_sl_cycl(main_stake_var, step)
             ready_to_close_list = [x for x in main_stake if x["done_level"] == 3]
             if len(ready_to_close_list) != 0:
                 main_stake_var, problem_to_closing_by_market_list = average_closer_func(main_stake_var, ready_to_close_list)

@@ -7,8 +7,7 @@ current_file = os.path.basename(__file__)
 
 def tp_sl_make_orders(item):
     itemm = item.copy()
-    is_closing = -1
-    
+    is_closing = -1   
 
     try:  
         # sl static order //////////////////////////////////////////////        

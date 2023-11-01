@@ -7,20 +7,21 @@ current_file = os.path.basename(__file__)
 
 class SL_TRAILING_STRATEGYY():
 
-    def __init__(self) -> None:  
-        self.trailing_sl_levels = my_params.TABULA_SL_TP_POINTS
-        self.statik_sl = my_params.STATIC_SL_Q
-        self.statik_tp = my_params.STATIC_TP_Q
+    def __init__(self) -> None: 
+        pass 
+        # self.trailing_sl_levels = my_params.TABULA_SL_TP_POINTS
+        # self.q_trailing_sl = self.trailing_sl_levels[0][0]             
+        # self.q_trailing_tp = self.trailing_sl_levels[0][1] 
 
-    def trailling_sl_cycl(self, main_stake):
+    def trailling_sl_cycl(self, main_stake, step):
         main_stake_var = main_stake.copy()
         done_flag = False
         # print('hello trailing cycl')
         for i, item in enumerate(main_stake):
-            main_stake_var[i], done_flag = self.tailling_sl(item)
-        return main_stake_var, done_flag       
+            main_stake_var[i], done_flag, step = self.tailling_sl(item, step)
+        return main_stake_var, done_flag, step      
 
-    def tailling_sl(self, item):
+    def tailling_sl(self, item, step):
 
         # print(f"len_main_stake  {len(main_stake)}")
         itemm = item.copy() 
@@ -35,8 +36,8 @@ class SL_TRAILING_STRATEGYY():
         # print(static_tp_price)
 
         try: 
-            q_trailing_sl = self.trailing_sl_levels[1][0]             
-            q_trailing_tp = self.trailing_sl_levels[1][1]  
+            q_trailing_sl = itemm["trailing_sl_levels"][0][0]             
+            q_trailing_tp = itemm["trailing_sl_levels"][0][1]  
             # print(q_trailing_sl)    
             # print(q_trailing_tp)      
         except:
@@ -71,7 +72,7 @@ class SL_TRAILING_STRATEGYY():
                             done_flag = True  
                             return itemm, done_flag        
 
-            if len(self.trailing_sl_levels) != 0:                    
+            if len(itemm["trailing_sl_levels"]) != 0:                    
                 if not itemm["checkpointt_flag"]:
                     if not itemm["checkpointt"]:
                         try:
@@ -94,16 +95,20 @@ class SL_TRAILING_STRATEGYY():
                         print('str 207: Problem with calc checkpointt and breakpointt')
 
                 if itemm["checkpointt_flag"]:
-                    if my_params.SL_STRATEGY_NUMBER == 2:  
-                        print('Hello checkpointt_flag!')
-                        itemm["checkpointt_flag"] = False                
-                        self.trailing_sl_levels.pop(0)                             
-                        itemm["checkpointt"], itemm["breakpointt"] = None, None
+                    # if my_params.SL_STRATEGY_NUMBER == 2:  
+                    print('Hello checkpointt_flag!')
+                    itemm["checkpointt_flag"] = False                
+                    itemm["trailing_sl_levels"].pop(0)                             
+                    itemm["checkpointt"], itemm["breakpointt"] = None, None
             else:
                 print('len(self.TABULA_SL_TP_POINTS) = 0!')
     
-        return itemm, done_flag
+        return itemm, done_flag, step
 
 sl_trailing_strategy = SL_TRAILING_STRATEGYY()
 
-# python -m MONEY.stop_logic
+# print(sl_trailing_strategy.trailing_sl_levels)
+# print(sl_trailing_strategy.q_trailing_sl)
+# print(sl_trailing_strategy.q_trailing_tp)
+
+# python -m ENGIN.sl_strategy_2

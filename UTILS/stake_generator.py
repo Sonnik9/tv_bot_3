@@ -1,3 +1,4 @@
+from pparamss import my_params
 
 def stake_generator_func(usual_defender_stake):
     
@@ -20,6 +21,9 @@ def stake_generator_func(usual_defender_stake):
             "checkpointt_flag": False,
             "checkpointt": None,
             "breakpointt": None,
+            "trailing_sl_levels": my_params.TABULA_SL_TP_POINTS,
+            "statik_sl": my_params.STATIC_SL_Q,
+            "statik_tp": my_params.STATIC_TP_Q,
             "done_level": 0
             # "approximate_profit": None,
             # "in_position": False,  
