@@ -1,47 +1,23 @@
-from pparamss import my_params
-from API.config import Configg
-import pandas as pd
-from API.get_api import get_apii
+# import pandas as pd
+from API.get_api import GETT_API
 
-class DELETEE_API(Configg):
+class DELETEE_API(GETT_API):
 
     def __init__(self) -> None:
-        super().__init__()
-        self.method = 'DELETE'
-
-    # def cancel_order_by_id(self, symbol, last_sl_order_id):
-
-    #     cancel_order = None
-    #     all_orders = None
-    #     success_flag = False
-    #     all_orders = get_apii.get_all_orders()
-
-    #     for item in all_orders:
-    #         if item["symbol"] == symbol:
-    #             params = {}
-    #             params["symbol"] = item["symbol"]
-    #             params["orderId"] = last_sl_order_id
-    #             params = self.get_signature(params)
-    #             url = my_params.URL_PATTERN_DICT['create_order_url']                
-    #             cancel_order = self.HTTP_request(url, method=self.method, headers=self.header, params=params)                
-    #             break
-
-    #     if cancel_order and 'status' in cancel_order and cancel_order['status'] == 'CANCELED':
-    #         success_flag = True 
-            
-    #     return cancel_order, success_flag
+        super().__init__()       
 
     def cancel_all_orders_for_position(self, symbol_list):
-        cancel_orders_list = []      
+        cancel_orders_list = []  
+        method = 'DELETE'    
 
         for item in symbol_list:
             cancel_order = None
             params = {}
             params["symbol"] = item
             params = self.get_signature(params)
-            url = my_params.URL_PATTERN_DICT['cancel_all_orders_url']
+            url = self.URL_PATTERN_DICT['cancel_all_orders_url']
             
-            cancel_order = self.HTTP_request(url, method=self.method, headers=self.header, params=params)
+            cancel_order = self.HTTP_request(url, method=method, headers=self.header, params=params)
             cancel_orders_list.append(cancel_order)
             
         return cancel_orders_list
@@ -50,13 +26,13 @@ class DELETEE_API(Configg):
 
         cancel_orders = None
         all_orders = None
-        all_orders = get_apii.get_all_orders()
+        all_orders = self.get_all_orders()
 
         for item in all_orders:
             params = {}
             params["symbol"] = item["symbol"]
             params = self.get_signature(params)
-            url = my_params.URL_PATTERN_DICT['cancel_all_orders_url']
+            url = self.URL_PATTERN_DICT['cancel_all_orders_url']
             method = 'DELETE'
             cancel_orders = self.HTTP_request(url, method=method, headers=self.header, params=params)
             # print(cancel_orders)

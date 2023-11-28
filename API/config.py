@@ -1,4 +1,4 @@
-from pparamss import my_params
+from pparamss import INIT_PARAMS
 import logging, os, inspect
 from dotenv import load_dotenv
 import time
@@ -10,21 +10,10 @@ current_file = os.path.basename(__file__)
 
 load_dotenv()
 
-class Configg():
+class CONFIG(INIT_PARAMS):
 
     def __init__(self) -> None:
-        if not my_params.TEST_FLAG:
-            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_REAL", "")
-            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_REAL", "")
-        else:
-            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_FUTURES_TEST", "")
-            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_FUTURES_TEST", "")
-        # print(self.api_key)
-        # print(self.api_secret)
-        self.header = {
-            'X-MBX-APIKEY': self.api_key
-        }
-
+        super().__init__()
     def get_signature(self, params):
         try:
             params['timestamp'] = int(time.time() *1000)

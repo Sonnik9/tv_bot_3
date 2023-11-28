@@ -1,94 +1,102 @@
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-class Parameters:
-    def __init__(self):
-        self.SOLI_DEO_GLORIA = 'Soli Deo Gloria!'
+class BASIC_PARAMETRS():
+    def __init__(self):        
+        self.SOLI_DEO_GLORIA = 'Soli Deo Gloria!'        
+        self.market = 'spot'
+        self.market = 'futures'
+        self.test_flag = True
         self.DIVERCIFICATION_NUMDER = 5
-        self.MARKET = 'futures'
-        # self.market = 'spot'
-        # self.test_flag = False # -- real
-        self.TEST_FLAG = True # -- test
         self.DEPO = 25
-        self.LEVERAGE = 1
-        # self.SLIPPAGE_COEFFICIENT = 0.005  # Коэффициент погрешности 0.5%         
-        self.MAIN_STRATEGY_NUMBER = 1
-        self.BUNCH_VARIANT = 1
-        # self.SL_STRATEGY_NUMBER = 1  # statik sl/tp
-        # self.SL_STRATEGY_NUMBER = 2.0  # trailing sl/tp by limit order
-        self.SL_STRATEGY_NUMBER = 2  # trailing sl/tp by market order
-        
-class TEMPLATES(Parameters):
-   
-    def __init__(self) -> None:
-        super().__init__()
-        self.TERMINATE_TIMER_FLAG = False
-        self.REST_TIME = {
-            "from": 1,
-            "to": 3
-        }
-        self.KLINE_TIME, self.TIME_FRAME = 4, 'h'
-        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
-        self.ATR_PERIOD = 14
-        # ///////////////////////////////////////////////////////////////////////////////
-        # /////////////////////////////////////////////////////////////////////////////
-        fibonacci_levels = [0, 0.236, 0.382, 0.50, 0.618, 1, 1.618, 2.618, 4.236] 
-        self.SL_TABULA_NUMBER = 3
-        self.SL_TABULA_LIST = [
-            self.SOLI_DEO_GLORIA,            
-            [[fibonacci_levels[6], fibonacci_levels[5]], [[fibonacci_levels[1] * 0.5,fibonacci_levels[1]], [fibonacci_levels[2] * 0.5, fibonacci_levels[2]], [fibonacci_levels[3] * 0.5, fibonacci_levels[3]], [fibonacci_levels[4] * 0.5, fibonacci_levels[4]]]],
-            [[0.9, 1.2], [[0.2, 0.4], [0.3, 0.6], [0.45, 0.9], [0.55, 1.11]]],
-            [[2.1, 0.5], [[0.07, 0.12], [0.12, 0.24]]]
-        ]
-        self.TABULA_STATIC_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][0]        
-        self.TABULA_SL_TP_POINTS = self.SL_TABULA_LIST[self.SL_TABULA_NUMBER][1] 
-        self.STATIC_SL_Q = self.TABULA_STATIC_SL_TP_POINTS[0]        
-        self.STATIC_TP_Q = self.TABULA_STATIC_SL_TP_POINTS[1]
 
-        # //////////////////////////////////////////////////////////////////////////////
-        self.URL_PATTERN_DICT= {}
-        if not self.TEST_FLAG:
-            if self.MARKET == 'spot':                
+    def init_api_key(self):
+        self.tg_api_token = os.getenv("TG_API_TOKEN", "")
+        if not self.test_flag:
+            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_REAL", "")
+            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_REAL", "")
+        else:
+            self.api_key  = os.getenv("BINANCE_API_PUBLIC_KEY_FUTURES_TEST", "")
+            self.api_secret = os.getenv("BINANCE_API_PRIVATE_KEY_FUTURES_TEST", "")    
+
+        self.header = {
+            'X-MBX-APIKEY': self.api_key
+        }     
+
+class URL_TEMPLATES(BASIC_PARAMETRS):
+    def __init__(self) -> None:
+        super().__init__()        
+        self.URL_PATTERN_DICT= {}              
+
+    def init_urls(self):  
+        if not self.test_flag:      
+            if self.market == 'spot':  
+                print('spot') 
+                self.URL_PATTERN_DICT['current_ptice_url'] = "https://api.binance.com/api/v3/ticker/price"            
                 self.URL_PATTERN_DICT['all_tikers_url'] = "https://api.binance.com/api/v3/ticker/24hr"
                 self.URL_PATTERN_DICT['create_order_url'] = 'https://api.binance.com/api/v3/order' 
                 self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://api.binance.com/api/v3/exchangeInfo'
                 self.URL_PATTERN_DICT['balance_url'] = 'https://api.binance.com/api/v3/account'
                 self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://api.binance.com/api/v3/openOrders'
                 self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://api.binance.com/api/v3/allOpenOrders'
+                self.URL_PATTERN_DICT['positions_url'] = 'https://api.binance.com/api/v3/account'                
+                self.URL_PATTERN_DICT["klines_url"] = 'https://api.binance.com/api/v3/klines'
 
-            else:
-                self.URL_PATTERN_DICT['all_tikers_url'] = "https://fapi.binance.com/fapi/v1/ticker/24hr"
-                self.URL_PATTERN_DICT['create_order_url'] = 'https://fapi.binance.com/fapi/v1/order' 
-                self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://fapi.binance.com/fapi/v1/exchangeInfo'
-                self.URL_PATTERN_DICT['balance_url'] = 'https://fapi.binance.com/fapi/v1/balance'
-                self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/openOrders'
-                self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://fapi.binance.com/fapi/v1/allOpenOrders'
         else:
-            if self.MARKET == 'spot':
-                self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binance.com/v3/ticker/24hr"
-                self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binance.vision/api/v3/order' 
-                self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binance.vision/api/v3/exchangeInfo'
-                self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binance.vision/api/v3/account'
-                self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binance.vision/api/v3/openOrders'
-                self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://testnet.binance.vision/api/v3/allOpenOrders'
+            print('futures test')
+            self.URL_PATTERN_DICT['current_ptice_url'] = "https://fapi.binance.com/fapi/v1/ticker/price"
+            self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
+            self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
+            self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
+            self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binancefuture.com/fapi/v2/balance'
+            self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/openOrders'
+            self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/allOpenOrders'
+            self.URL_PATTERN_DICT['positions_url'] = 'https://testnet.binancefuture.com/fapi/v2/positionRisk'
+            self.URL_PATTERN_DICT["set_leverage_url"] = 'https://testnet.binancefuture.com/fapi/v1/leverage'
+            self.URL_PATTERN_DICT["klines_url"] = 'https://testnet.binancefuture.com/fapi/v1/klines'
 
-            else:
-                self.URL_PATTERN_DICT['all_tikers_url'] = "https://testnet.binancefuture.com/fapi/v1/ticker/24hr"
-                self.URL_PATTERN_DICT['create_order_url'] = 'https://testnet.binancefuture.com/fapi/v1/order'
-                self.URL_PATTERN_DICT['exchangeInfo_url'] = 'https://testnet.binancefuture.com/fapi/v1/exchangeInfo'
-                self.URL_PATTERN_DICT['balance_url'] = 'https://testnet.binancefuture.com/fapi/v2/balance'
-                self.URL_PATTERN_DICT['get_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/openOrders'
-                self.URL_PATTERN_DICT['cancel_all_orders_url'] = 'https://testnet.binancefuture.com/fapi/v1/allOpenOrders'
-                self.URL_PATTERN_DICT['positions_url'] = 'https://testnet.binancefuture.com/fapi/v2/positionRisk'
-                self.URL_PATTERN_DICT["set_leverage_url"] = 'https://testnet.binancefuture.com/fapi/v1/leverage'
-                self.URL_PATTERN_DICT["klines_url"] = 'https://testnet.binancefuture.com/fapi/v1/klines'
-        # ////////////////////////////////////////////////////////////////////////////
-        self.SLICE_VOLUME_PAIRS = 10
-        self.SLICE_CHANGINGPRICES_PAIRS = 10
-        self.FILTER_PRICE = 0.1
-        self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT']
-        # self.QNT_ROUNDING_TYPE = 'ceil'
-        self.QNT_ROUNDING_TYPE = 'round'
-        # self.QNT_ROUNDING_TYPE = 'floor'
+        
+class TIME_TEMPLATES(URL_TEMPLATES):   
+    def __init__(self) -> None:
+        super().__init__()
+        self.break_time = {}
+        self.break_time["from"] = 3
+        self.break_time["to"] = 4
+        self.KLINE_TIME, self.TIME_FRAME = 1, 'h'
+        self.INTERVAL = str(self.KLINE_TIME) + self.TIME_FRAME
 
-my_params = TEMPLATES()
+class INDICATORD_PARAMS(TIME_TEMPLATES):
+    def __init__(self) -> None:
+        super().__init__()
+        self.b_bband_q, self.s_bband_q = 1, 1
+        self.b_rsi_lev, self.s_rsi_lev = 33, 67
+        self.b_rsi_diver_lev = 50 
+        self.rsi_period = 14   
+        self.b_macd_q, self.s_macd_q = 1, 1
+        self.b_stoch_q, self.s_stoch_q = 23, 77
+
+class FILTER_SET(INDICATORD_PARAMS):
+    def __init__(self) -> None:
+        super().__init__()
+        self.SLICE_VOLUME_PAIRS = 10 # volums
+        self.SLICE_VOLATILITY = 7 # volatility
+        self.MIN_FILTER_PRICE = 0.01 # min price
+        self.MAX_FILTER_PRICE = 3000000 # max price
+        # self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT', 'ORDIUSDT']
+        self.problem_pairs = ['DOGEUSDT'] # problem coins list
+
+class INIT_PARAMS(FILTER_SET):
+    def __init__(self) -> None:
+        super().__init__()
+        self.init_itits()
+
+    def init_itits(self):
+        print('helloo')
+        self.init_api_key()       
+        self.init_urls()
+
+
 
 # python -m pparamss
