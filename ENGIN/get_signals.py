@@ -1,7 +1,7 @@
 from tradingview_ta import *
-from API.utils_api import UTILS_APII
+from UTILS.main_utils import MAIN_UTILSS
 
-class IND_STRATEGY_CONTROLLER(UTILS_APII):
+class IND_STRATEGY_CONTROLLER(MAIN_UTILSS):
 
     def __init__(self)-> None:
         super().__init__()
@@ -30,10 +30,10 @@ class IND_STRATEGY_CONTROLLER(UTILS_APII):
             except Exception as ex:
                 continue
             if (recommendation == 'STRONG_BUY'): #or (recommendation == 'BUY'):
-                orders_stek.append((indicator, 2))          
+                orders_stek.append((indicator, 1))          
 
             elif (recommendation == 'STRONG_SELL'): #or (recommendation == 'SELL'):     
-                orders_stek.append((indicator, 1))             
+                orders_stek.append((indicator, -1))             
 
         return orders_stek 
     

@@ -54,19 +54,9 @@ class GETT_API(CONFIG):
             
         return current_balance
     
-    def get_current_price(self, symbol):
-        current_price = None
-        url = self.URL_PATTERN_DICT['current_ptice_url']
-        params = {'symbol': symbol}
-        try:
-            current_price = self.HTTP_request(url, method=method, params=params)    
-            current_price = float(current_price["price"])
-        except Exception as ex:
-            print(ex)
 
-        return current_price
     
-    def get_position_price(self, symbol):
+    def get_DeFacto_price(self, symbol):
         
 
         positions = None        

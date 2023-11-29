@@ -1,0 +1,6 @@
+ERROR:root:An error occurred in file 'main.py', line 26: cannot access local variable 'open_market_order' where it is not associated with a value
+ERROR:root:An error occurred in file 'main.py', line 26: cannot access local variable 'open_market_order' where it is not associated with a value
+ERROR:root:An error occurred in file 'main.py', line 26: cannot access local variable 'open_market_order' where it is not associated with a value
+ERROR:root:An error occurred in file 'main.py', line 26: SL_CONTROL.sl_strategy_1_func() takes 2 positional arguments but 3 were given
+ERROR:root:An error occurred in file 'main.py', line 26: SL_CONTROL.sl_strategy_1_func() takes 2 positional arguments but 3 were given
+ERROR:root:An error occurred in file 'main.py', line 26: SL_CONTROL.sl_strategy_1_func() takes 2 positional arguments but 3 were given

@@ -39,4 +39,4 @@ class DELETEE_API(GETT_API):
 
         return 
     
-delete_apii = DELETEE_API()
+# delete_apii = DELETEE_API()

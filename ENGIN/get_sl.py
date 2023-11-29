@@ -4,17 +4,17 @@ class SL_CONTROL():
     def __init__(self) -> None:
         pass
 
-    def sl_strategy_1_func(self, main_steak):    
-        
-        for i in range(len(main_steak)):
-            last_atr = main_steak["atr"].iloc[i]
-            slatr = 1.2*last_atr  
-            last_close_price = main_steak["enter_deFacto_price"].iloc[i]      
+    def sl_strategy_1_func(self, item):  
 
-            if main_steak["defender"].iloc[i] == 2:
-                main_steak["tp_price"][i] = last_close_price + slatr
-            elif main_steak["defender"].iloc[i] == 1:
-                main_steak["tp_price"][i] = last_close_price - slatr
+        last_atr = item["atr"]
+        slatr = 1.2*last_atr  
+        last_close_price = item["enter_deFacto_price"]      
+
+        if item["defender"]== 1:
+            item["tp_price"] = round((last_close_price + slatr), item["price_precision"])
+            
+        elif item["defender"] == -1:
+            item["tp_price"] = round((last_close_price - slatr), item["price_precision"])
                     
-        return main_steak
+        return item
 

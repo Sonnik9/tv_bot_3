@@ -6,11 +6,12 @@ load_dotenv()
 class BASIC_PARAMETRS():
     def __init__(self):        
         self.SOLI_DEO_GLORIA = 'Soli Deo Gloria!'        
-        self.market = 'spot'
+        # self.market = 'spot'
         self.market = 'futures'
         self.test_flag = True
-        self.DIVERCIFICATION_NUMDER = 5
-        self.DEPO = 25
+        # self.test_flag = False
+        self.DIVERCIFICATION_NUMDER = 15
+        self.DEPO = 20
 
     def init_api_key(self):
         self.tg_api_token = os.getenv("TG_API_TOKEN", "")
@@ -80,8 +81,8 @@ class INDICATORD_PARAMS(TIME_TEMPLATES):
 class FILTER_SET(INDICATORD_PARAMS):
     def __init__(self) -> None:
         super().__init__()
-        self.SLICE_VOLUME_PAIRS = 10 # volums
-        self.SLICE_VOLATILITY = 7 # volatility
+        self.SLICE_VOLUME_PAIRS = 150 # volums
+        self.SLICE_VOLATILITY = 120 # volatility
         self.MIN_FILTER_PRICE = 0.01 # min price
         self.MAX_FILTER_PRICE = 3000000 # max price
         # self.problem_pairs = ['SOLUSDT', 'ZECUSDT', 'MKRUSDT', 'COMPUSDT', 'ORDIUSDT']

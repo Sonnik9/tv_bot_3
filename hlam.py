@@ -796,5 +796,28 @@
 # f = math.floor(f * 10 ** tick_size) / (10 ** tick_size)
 # print(f"floor:  {f}")
 # print(f"tick_size:  {tick_size}")
+# def checkpoint_calc(enter_deFacto_price, atr, q_sl, q_tp, defender, price_precision, static_defender, rounding_type='round'):
 
+#     checkpointt, breakpointt = None, None
+#     try:
+#         if rounding_type == 'round':
+#             checkpointt = round(enter_deFacto_price + (defender * atr * q_tp), price_precision)
+#         elif rounding_type == 'ceil':
+#             checkpointt = math.ceil((enter_deFacto_price + (defender * atr * q_tp)) * 10 ** price_precision) / (10 ** price_precision)
+#         elif rounding_type == 'floor':
+#             checkpointt = math.floor((enter_deFacto_price + (defender * atr * q_tp)) * 10 ** price_precision) / (10 ** price_precision)
+
+#     except Exception as ex:
+#         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+#     try:
+#         if rounding_type == 'round':
+#             breakpointt = round(enter_deFacto_price + (static_defender * defender * atr * q_sl), price_precision)
+#         elif rounding_type == 'ceil':
+#             breakpointt = math.ceil((enter_deFacto_price + (static_defender * defender * atr * q_sl)) * 10 ** price_precision) / (10 ** price_precision)
+#         elif rounding_type == 'floor':
+#             breakpointt = math.floor((enter_deFacto_price + (static_defender * defender * atr * q_sl)) * 10 ** price_precision) / (10 ** price_precision)
+#     except Exception as ex:
+#         logging.error(f"An error occurred in file '{current_file}', line {inspect.currentframe().f_lineno}: {ex}") 
+
+#     return checkpointt, breakpointt 
 
